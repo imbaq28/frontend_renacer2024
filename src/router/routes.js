@@ -1,10 +1,12 @@
 const routes = [
   {
     path: "/",
-    component: () => import("layouts/TestLayout.vue"),
+    component: () => import("layouts/Test2Layout.vue"),
     children: [
       { path: "", component: () => import("pages/IndexPage.vue") },
-      { path: "login", component: () => import("pages/LoginPage.vue") },
+      //{ path: "login", component: () => import("pages/log.vue") },
+      { path: "login", component: () => import("src/pages/LoginPage.vue") },
+      { path: "/form", component: () => import("src/pages/Form.vue") },
     ],
   },
 
