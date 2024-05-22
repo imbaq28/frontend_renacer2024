@@ -1,8 +1,10 @@
 <template>
   <q-layout view="lHh Lpr lff">
-    <q-header elevated class="primary">
+    <q-header elevated class="primary" style="font-size: medium">
       <q-toolbar>
-        <q-toolbar-title>FARMACIA RENACER</q-toolbar-title>
+        <q-toolbar-title class="text-h3 text-center"
+          >FARMACIA RENACER</q-toolbar-title
+        >
         <q-btn flat @click="drawer = !drawer" round dense icon="menu" />
       </q-toolbar>
     </q-header>
@@ -16,18 +18,10 @@
         "
       >
         <q-list padding>
-          <q-item clickable v-ripple to="/" exact active-class="my-menu-link">
-            <q-item-section avatar>
-              <q-icon name="inbox" />
-            </q-item-section>
-
-            <q-item-section> Inicio </q-item-section>
-          </q-item>
-
           <q-item
             clickable
             v-ripple
-            to="/login"
+            to="/farmacia/clientes"
             exact
             active-class="my-menu-link"
           >
@@ -35,36 +29,73 @@
               <q-icon name="inbox" />
             </q-item-section>
 
-            <q-item-section> Login </q-item-section>
+            <q-item-section> Clientes </q-item-section>
           </q-item>
 
-          <q-item clickable v-ripple to="/about" active-class="my-menu-link">
+          <q-item
+            clickable
+            v-ripple
+            to="/farmacia/producto"
+            active-class="my-menu-link"
+          >
             <q-item-section avatar>
-              <q-icon name="star" />
+              <q-icon name="today" />
             </q-item-section>
 
-            <q-item-section> About </q-item-section>
+            <q-item-section> Producto </q-item-section>
           </q-item>
-          <q-item clickable v-ripple to="/form" active-class="my-menu-link">
+
+          <q-item
+            clickable
+            v-ripple
+            to="/farmacia/proveedores"
+            active-class="my-menu-link"
+          >
             <q-item-section avatar>
-              <q-icon name="star" />
+              <q-icon name="today" />
             </q-item-section>
 
-            <q-item-section> Form </q-item-section>
+            <q-item-section> Proveedores</q-item-section>
+          </q-item>
+
+          <q-item
+            clickable
+            v-ripple
+            to="/farmacia/categoria"
+            active-class="my-menu-link"
+          >
+            <q-item-section avatar>
+              <q-icon name="today" />
+            </q-item-section>
+
+            <q-item-section> Categorias</q-item-section>
+          </q-item>
+
+          <q-item
+            clickable
+            v-ripple
+            to="/farmacia/presentacion"
+            active-class="my-menu-link"
+          >
+            <q-item-section avatar>
+              <q-icon name="today" />
+            </q-item-section>
+
+            <q-item-section> Presentacion</q-item-section>
           </q-item>
         </q-list>
       </q-scroll-area>
 
       <q-img
         class="absolute-top"
-        src="https://cdn.quasar.dev/img/material.png"
+        src="images/farmrenbola.png"
         style="height: 150px"
       >
         <div class="absolute-bottom bg-transparent">
           <q-avatar size="56px" class="q-mb-sm">
             <img src="https://cdn.quasar.dev/img/boy-avatar.png" />
           </q-avatar>
-          <div class="text-weight-bold">Razvan Stoenescu</div>
+          <div class="text-weight-bold">Farmacia RENACER</div>
           <div>@rstoenescu</div>
         </div>
       </q-img>
@@ -76,19 +107,20 @@
   </q-layout>
 </template>
 
-<script>
+<script setup>
 import { ref } from "vue";
-export default {
-  setup() {
-    const drawer = ref(false);
-    return { drawer };
-  },
-};
+
+const drawer = ref(false);
 </script>
 
 <style lang="scss">
 .my-menu-link {
-  color: white;
-  background: $cyan-9;
+  color: rgb(255, 255, 255);
+  background: #667dd8;
+}
+body {
+  font-family: "Single Day", cursive;
+  font-weight: 400;
+  font-style: normal;
 }
 </style>

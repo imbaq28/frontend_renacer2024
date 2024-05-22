@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from "vue";
+import CrearCliente from "src/components/CrearCliente.vue";
 const password = ref("");
 
 const isPwd = ref(true);
@@ -84,18 +85,7 @@ function simulateProgress(number) {
           </div>
           <div class="col">
             <div>
-              <q-btn
-                :loading="loading[2]"
-                color="primary"
-                @click="simulateProgress(2)"
-                style="width: 150px"
-              >
-                Nuevo
-                <template v-slot:loading>
-                  <q-spinner-hourglass class="on-left" />
-                  Loading...
-                </template>
-              </q-btn>
+              <CrearCliente />
             </div>
           </div>
         </div>
