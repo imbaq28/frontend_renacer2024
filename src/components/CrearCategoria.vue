@@ -47,18 +47,26 @@
           </template>
         </q-input>
       </template>
+      <template #body-cell-acciones="props">
+        <q-td :props="props">
+          <q-btn icon="edit" color="primary"/>
+          <q-btn icon="delete" color="red"/>
+        </q-td>
+      </template>
     </q-table>
   </div>
 </template>
 
-<script>
-import { ref } from "vue";
+<script setup>
+import { ref, onMounted } from "vue";
+import { api } from 'boot/axios'
 
 const columns = [
   {
     name: "acciones",
     label: "Botones",
     align: "left",
+    field: "acciones",
   },
   {
     name: "id",
@@ -143,55 +151,47 @@ const originalRows = [
   },
 ];
 
-export default {
-  setup() {
-    const loading = ref(false);
-    const filter = ref("");
-    const rowCount = ref(10);
-    const rows = ref([...originalRows]);
+onMounted(async () => {
+  const categorias = await api.get("/farmacia/categoria")
+  rows.value=categorias.data.datos
+  console.log(categorias.data.datos);
+});
 
-    return {
-      columns,
-      rows,
+const loading = ref(false);
+const filter = ref("");
+const rowCount = ref(10);
+const rows = ref([]);
+  function  addRow() {
+    loading.value = true;
+    setTimeout(() => {
+      const index = Math.floor(Math.random() * (rows.value.length + 1)),
+        row = originalRows[Math.floor(Math.random() * originalRows.length)];
 
-      loading,
-      filter,
-      rowCount,
+      if (rows.value.length === 0) {
+        rowCount.value = 0;
+      }
 
-      // emulate fetching data from server
-      addRow() {
-        loading.value = true;
-        setTimeout(() => {
-          const index = Math.floor(Math.random() * (rows.value.length + 1)),
-            row = originalRows[Math.floor(Math.random() * originalRows.length)];
+      row.id = ++rowCount.value;
+      const newRow = { ...row }; // extend({}, row, { name: `${row.name} (${row.__count})` })
+      rows.value = [
+        ...rows.value.slice(0, index),
+        newRow,
+        ...rows.value.slice(index),
+      ];
+      loading.value = false;
+    }, 500);
+  }
 
-          if (rows.value.length === 0) {
-            rowCount.value = 0;
-          }
+  function removeRow() {
+    loading.value = true;
+    setTimeout(() => {
+      const index = Math.floor(Math.random() * rows.value.length);
+      rows.value = [
+        ...rows.value.slice(0, index),
+        ...rows.value.slice(index + 1),
+      ];
+      loading.value = false;
+    }, 500);
+  }
 
-          row.id = ++rowCount.value;
-          const newRow = { ...row }; // extend({}, row, { name: `${row.name} (${row.__count})` })
-          rows.value = [
-            ...rows.value.slice(0, index),
-            newRow,
-            ...rows.value.slice(index),
-          ];
-          loading.value = false;
-        }, 500);
-      },
-
-      removeRow() {
-        loading.value = true;
-        setTimeout(() => {
-          const index = Math.floor(Math.random() * rows.value.length);
-          rows.value = [
-            ...rows.value.slice(0, index),
-            ...rows.value.slice(index + 1),
-          ];
-          loading.value = false;
-        }, 500);
-      },
-    };
-  },
-};
 </script>

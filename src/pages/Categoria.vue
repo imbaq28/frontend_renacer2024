@@ -6,12 +6,12 @@
     <q-form @submit="enviarForm" @reset="resetForm">
       <div class="row q-col-gutter-md" style="width: 500px">
         <div class="col-12">
-          <q-input v-model="categoria.Categoria" label="Categoria: " />
+          <q-input v-model="categoria.nombre" label="Categoria: " />
         </div>
 
         <div class="col-12">
           <q-input
-            v-model="categoria.detalles"
+            v-model="categoria.detalle"
             label="Detalles"
             filled
             type="textarea"
@@ -44,27 +44,29 @@
 
 <script setup>
 import { ref } from "vue";
+import { api } from 'boot/axios'
 
-const opciones = ["H", "I", "null"];
+const opciones = ["ACTIVO", "INACTIVO"];
 const categoria = ref({
-  id: 0,
-  Categoria: "",
-  Detalles: "",
-  logo: "",
-  estado: "",
+  nombre: "",
+  detalle: "",
+  estado: "ACTIVO",
 });
 
-const enviarForm = () => {
-  console.log("Enviando Formulario");
+const  enviarForm = async() => {
+  try {
+    const cat = await api.post("/farmacia/categoria",categoria.value)
+    console.log(cat)
+  } catch (error) {
+    console.log('error: ' + error)
+  }
 };
 
 const resetForm = () => {
   proveedor.value = {
-    id: "0",
-    Categoria: "",
+    categoria: "",
     detalles: "",
-    logo: "",
-    estado: "",
+    estado: "ACTIVO",
   };
 };
 </script>
