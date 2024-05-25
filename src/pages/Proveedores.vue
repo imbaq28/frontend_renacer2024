@@ -6,7 +6,11 @@
     <q-form @submit="enviarForm" @reset="resetForm">
       <div class="row q-col-gutter-md" style="width: 500px">
         <div class="col-12">
-          <q-input v-model="proveedor.nombre" label="Nombre del Proveedor" />
+          <q-input
+            v-model="proveedor.nombre"
+            label="Nombre del Proveedor:"
+            item-aligned="left"
+          />
         </div>
 
         <div class="col-12">
@@ -42,37 +46,42 @@
           />
         </div>
       </div>
+      <div>
+        <VerProveedor />
+      </div>
     </q-form>
   </q-page>
 </template>
 
 <script setup>
 import { ref } from "vue";
-
+import { api } from "boot/axios";
+import VerProveedor from "src/components/VerProveedor.vue";
 const proveedor = ref({
-  id: 0,
   nombre: "",
   nit: 0,
-  Detalles: "",
-  logo: "",
-  estado: "",
+  detalles: "",
+  estado: "ACTIVO",
 });
 
-const seleccion = ref(null);
-const opciones = ["maxima", "moderada", "minima"];
+const opciones = ["ACTIVO", "INACTIVO"];
 
-const enviarForm = () => {
-  console.log("Enviando Formulario");
+const enviarForm = async () => {
+  try {
+    const prov = await api.post("/farmacia/proveedores", proveedor.value);
+    resetForm();
+    console.log(prov);
+  } catch (error) {
+    console.log("error: " + error);
+  }
 };
 
 const resetForm = () => {
   proveedor.value = {
-    id: "0",
-    nombre: "ADN",
+    nombre: "",
     nit: 0,
     detalles: "",
-    logo: "",
-    estado: "",
+    estado: "ACTIVO",
   };
 };
 </script>

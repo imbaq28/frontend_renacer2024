@@ -1,5 +1,4 @@
 <template>
-  {{ variable }}
   <div class="q-pa-md">
     <q-table
       flat
@@ -15,8 +14,8 @@
         <q-btn
           color="primary"
           :disable="loading"
-          label="traer datos"
-          @click="traerDatos"
+          label="Add row"
+          @click="addRow"
         />
         <q-btn
           v-if="rows.length !== 0"
@@ -50,10 +49,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted } from "vue";
 import { api } from "boot/axios";
-const props = defineProps(["refrescardatos"]);
-const variable = computed(() => props.refrescardatos);
 
 const columns = [
   {
@@ -65,8 +62,8 @@ const columns = [
 
   {
     name: "nombre",
-    align: "center",
-    label: "Categoria",
+    align: "left",
+    label: "Presentacion",
     field: "nombre",
     sortable: true,
   },
@@ -75,7 +72,9 @@ const columns = [
 ];
 
 onMounted(async () => {
-  await traerDatos();
+  const presentacion = await api.get("/farmacia/presentacion");
+  rows.value = presentacion.data.datos;
+  console.log(presentacion.data.datos);
 });
 
 const loading = ref(false);
@@ -113,11 +112,5 @@ function removeRow() {
     ];
     loading.value = false;
   }, 500);
-}
-
-async function traerDatos() {
-  const categorias = await api.get("/farmacia/categoria");
-  rows.value = categorias.data.datos;
-  console.log(categorias.data.datos);
 }
 </script>

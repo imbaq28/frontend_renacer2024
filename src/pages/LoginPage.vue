@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from "vue";
-import CrearCliente from "src/components/CrearCliente.vue";
+import CrearUsuario from "src/components/CrearUsuario.vue";
 const password = ref("");
 
 const isPwd = ref(true);
@@ -52,6 +52,7 @@ function simulateProgress(number) {
                 :loading="loading[3]"
                 color="primary"
                 @click="simulateProgress(3)"
+                to="/farmacia"
                 style="width: 150px"
               >
                 Ingresar
@@ -85,7 +86,7 @@ function simulateProgress(number) {
           </div>
           <div class="col">
             <div>
-              <CrearCliente />
+              <CrearUsuario />
             </div>
           </div>
         </div>

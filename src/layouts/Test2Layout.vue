@@ -29,7 +29,7 @@
               <q-icon name="inbox" />
             </q-item-section>
 
-            <q-item-section> Clientes </q-item-section>
+            <q-item-section> CLIENTES </q-item-section>
           </q-item>
 
           <q-item
@@ -42,7 +42,7 @@
               <q-icon name="today" />
             </q-item-section>
 
-            <q-item-section> Producto </q-item-section>
+            <q-item-section> MEDICAMENTOS </q-item-section>
           </q-item>
 
           <q-item
@@ -55,7 +55,7 @@
               <q-icon name="today" />
             </q-item-section>
 
-            <q-item-section> Proveedores</q-item-section>
+            <q-item-section> PROVEEDORES</q-item-section>
           </q-item>
 
           <q-item
@@ -68,7 +68,7 @@
               <q-icon name="today" />
             </q-item-section>
 
-            <q-item-section> Categorias</q-item-section>
+            <q-item-section> CATEGORIAS</q-item-section>
           </q-item>
 
           <q-item
@@ -81,7 +81,20 @@
               <q-icon name="today" />
             </q-item-section>
 
-            <q-item-section> Presentacion</q-item-section>
+            <q-item-section> PRESENTACIÓN </q-item-section>
+          </q-item>
+
+          <q-item
+            clickable
+            v-ripple
+            to="/farmacia/ventas"
+            active-class="my-menu-link"
+          >
+            <q-item-section avatar>
+              <q-icon name="today" />
+            </q-item-section>
+
+            <q-item-section> VENTAS </q-item-section>
           </q-item>
         </q-list>
       </q-scroll-area>

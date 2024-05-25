@@ -39,6 +39,10 @@ const routes = [
         component: () => import("src/components/Inventario.vue"),
       },
       {
+        path: "ventas",
+        component: () => import("src/pages/Ventas.vue"),
+      },
+      {
         path: "crearcategoria",
         component: () => import("src/components/CrearCategoria.vue"),
       },

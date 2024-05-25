@@ -4,6 +4,11 @@
 
     <!--<pre>{{ producto }}</pre>-->
     <q-form @submit="enviarForm" @reset="resetForm">
+      <div>
+        <div class="col"></div>
+        <div class="col"></div>
+      </div>
+      <div class="col"></div>
       <div class="row q-col-gutter-md" style="width: 500px">
         <div class="col-12">
           <q-input v-model="categoria.nombre" label="Categoria: " />
@@ -38,34 +43,42 @@
           />
         </div>
       </div>
+      <div>
+        <CrearCategoria :refrescarDatos="refrescardatos" />
+      </div>
     </q-form>
   </q-page>
 </template>
 
 <script setup>
-import { ref } from "vue";
-import { api } from 'boot/axios'
+import { ref, computed } from "vue";
+import { api } from "boot/axios";
+import CrearCategoria from "src/components/CrearCategoria.vue";
 
 const opciones = ["ACTIVO", "INACTIVO"];
+const refrescarTabla = ref(false);
+
 const categoria = ref({
   nombre: "",
   detalle: "",
   estado: "ACTIVO",
 });
 
-const  enviarForm = async() => {
+const enviarForm = async () => {
   try {
-    const cat = await api.post("/farmacia/categoria",categoria.value)
-    console.log(cat)
+    const cat = await api.post("/farmacia/categoria", categoria.value);
+    refrescarTabla.value = true;
+    resetForm();
+    console.log(cat);
   } catch (error) {
-    console.log('error: ' + error)
+    console.log("error: " + error);
   }
 };
 
 const resetForm = () => {
-  proveedor.value = {
-    categoria: "",
-    detalles: "",
+  categoria.value = {
+    nombre: "",
+    detalle: "",
     estado: "ACTIVO",
   };
 };

@@ -7,14 +7,14 @@
       <div class="row q-col-gutter-md" style="width: 500px">
         <div class="col-12">
           <q-input
-            v-model="presentacion.Presentacion"
+            v-model="presentacion.nombre"
             label="Tipo de Presentacion: "
           />
         </div>
 
         <div class="col-12">
           <q-input
-            v-model="presentacion.detalles"
+            v-model="presentacion.detalle"
             label="Detalles"
             filled
             type="textarea"
@@ -41,33 +41,41 @@
           />
         </div>
       </div>
+      <div>
+        <VerPresentacion />
+      </div>
     </q-form>
   </q-page>
 </template>
 
 <script setup>
 import { ref } from "vue";
-const opciones = ["maxima", "moderada", "minima"];
+import { api } from "boot/axios";
+import VerPresentacion from "src/components/VerPresentacion.vue";
+
+const opciones = ["ACTIVO", "INACTIVO"];
 
 const presentacion = ref({
-  id: 0,
-  Presentacion: "",
-  detalles: "",
-  logo: "",
-  estado: "",
+  nombre: "",
+  detalle: "",
+  estado: "ACTIVO",
 });
 
-const enviarForm = () => {
-  console.log("Enviando Formulario");
+const enviarForm = async () => {
+  try {
+    const pres = await api.post("/farmacia/presentacion", presentacion.value);
+    resetForm();
+    console.log(pres);
+  } catch (error) {
+    console.log("error: " + error);
+  }
 };
 
 const resetForm = () => {
-  Presentacion.value = {
-    id: "0",
-    Presentacion: "",
-    detalles: "",
-    logo: "",
-    estado: "",
+  presentacion.value = {
+    nombre: "",
+    detalle: "",
+    estado: "ACTIVO",
   };
 };
 </script>

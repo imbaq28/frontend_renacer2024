@@ -1,5 +1,4 @@
 <template>
-  {{ variable }}
   <div class="q-pa-md">
     <q-table
       flat
@@ -15,8 +14,8 @@
         <q-btn
           color="primary"
           :disable="loading"
-          label="traer datos"
-          @click="traerDatos"
+          label="Add row"
+          @click="addRow"
         />
         <q-btn
           v-if="rows.length !== 0"
@@ -40,7 +39,7 @@
         </q-input>
       </template>
       <template #body-cell-acciones="props">
-        <q-td :props="props">
+        <q-td :props="props" style="width: 100px">
           <q-btn icon="edit" color="primary" />
           <q-btn icon="delete" color="red" />
         </q-td>
@@ -50,10 +49,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted } from "vue";
 import { api } from "boot/axios";
-const props = defineProps(["refrescardatos"]);
-const variable = computed(() => props.refrescardatos);
 
 const columns = [
   {
@@ -65,17 +62,19 @@ const columns = [
 
   {
     name: "nombre",
-    align: "center",
-    label: "Categoria",
+    align: "left",
+    label: "Nombre del Proveedor",
     field: "nombre",
     sortable: true,
   },
-  { name: "detalle", label: "Descripcion", field: "detalle", align: "left" },
+  //{ name: "detalle", label: "Descripcion", field: "detalle", align: "left" },
   { name: "estado", label: "Estado", field: "estado" },
 ];
 
 onMounted(async () => {
-  await traerDatos();
+  const proveedor = await api.get("/farmacia/Proveedores");
+  rows.value = proveedor.data.datos;
+  console.log(proveedor.data.datos);
 });
 
 const loading = ref(false);
@@ -113,11 +112,5 @@ function removeRow() {
     ];
     loading.value = false;
   }, 500);
-}
-
-async function traerDatos() {
-  const categorias = await api.get("/farmacia/categoria");
-  rows.value = categorias.data.datos;
-  console.log(categorias.data.datos);
 }
 </script>
