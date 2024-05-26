@@ -2,8 +2,13 @@
   <q-page padding>
     <h4>Agregar Presentacion</h4>
 
-    <!--<pre>{{ producto }}</pre>-->
     <q-form @submit="enviarForm" @reset="resetForm">
+      <div>
+        <VerPresentacion
+          :refrescarTabla="refrescarTabla"
+          @capturarDatos="capturarDatos"
+        />
+      </div>
       <div class="row q-col-gutter-md" style="width: 500px">
         <div class="col-12">
           <q-input
@@ -30,7 +35,20 @@
         </div>
 
         <div class="col-12">
-          <q-btn label="Submit" color="primary" type="submit" />
+          <q-btn
+            v-if="!editarPresentacion"
+            label="Submit"
+            color="primary"
+            type="submit"
+            style="width: 90px"
+          />
+          <q-btn
+            v-if="editarPresentacion"
+            label="Modificar"
+            color="primary"
+            @click="modificarPresentacion"
+            style="width: 90px"
+          />
           <q-btn
             label="Reset"
             color="primary"
@@ -40,9 +58,6 @@
             type="reset"
           />
         </div>
-      </div>
-      <div>
-        <VerPresentacion />
       </div>
     </q-form>
   </q-page>
@@ -54,18 +69,24 @@ import { api } from "boot/axios";
 import VerPresentacion from "src/components/VerPresentacion.vue";
 
 const opciones = ["ACTIVO", "INACTIVO"];
+const refrescarTabla = ref(false);
+const editarPresentacion = ref(false);
 
 const presentacion = ref({
   nombre: "",
   detalle: "",
   estado: "ACTIVO",
+  id: "",
 });
 
 const enviarForm = async () => {
   try {
-    const pres = await api.post("/farmacia/presentacion", presentacion.value);
+    const prov = await api.post("/farmacia/presentacion", presentacion.value);
     resetForm();
-    console.log(pres);
+    refrescarTabla.value = true;
+    setTimeout(() => {
+      refrescarTabla.value = false;
+    }, 500);
   } catch (error) {
     console.log("error: " + error);
   }
@@ -76,7 +97,36 @@ const resetForm = () => {
     nombre: "",
     detalle: "",
     estado: "ACTIVO",
+    id: "",
   };
+  editarPresentacion.value = false;
+};
+
+const capturarDatos = (datos) => {
+  editarPresentacion.value = true;
+  presentacion.value = {
+    nombre: datos.nombre,
+    detalle: datos.detalle,
+    estado: datos.estado,
+    id: datos.id,
+  };
+  console.log("capturados", datos);
+};
+
+const modificarPresentacion = async () => {
+  try {
+    await api.put(
+      `/farmacia/presentacion/${presentacion.value.id}`,
+      presentacion.value
+    );
+    resetForm();
+    refrescarTabla.value = true;
+    setTimeout(() => {
+      refrescarTabla.value = false;
+    }, 500);
+  } catch (error) {
+    console.log("error: " + error);
+  }
 };
 </script>
 

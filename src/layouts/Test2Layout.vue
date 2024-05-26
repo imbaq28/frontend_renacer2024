@@ -35,7 +35,7 @@
           <q-item
             clickable
             v-ripple
-            to="/farmacia/producto"
+            to="/farmacia/medicamento"
             active-class="my-menu-link"
           >
             <q-item-section avatar>

@@ -1,13 +1,6 @@
 <template>
   <div></div>
 
-  <q-btn
-    label="INVENTARIO"
-    color="primary"
-    @click="alert = true"
-    style="width: 150px"
-  />
-
   <div class="q-pa-md">
     <q-table
       flat

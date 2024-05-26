@@ -1,9 +1,10 @@
 <template>
   <q-page padding>
-    <div style="font-size: 75px">Agregar Producto</div>
+    <div style="font-size: 75px">MEDICAMENTOS</div>
 
     <!--<pre>{{ producto }}</pre>-->
     <q-form @submit="enviarForm" @reset="resetForm">
+      <Inventario />
       <div class="row q-col-gutter-md" style="width: 500px">
         <div class="col-12">
           <q-input
@@ -137,7 +138,7 @@
 
 <script setup>
 import { ref } from "vue";
-
+import Inventario from "src/components/Inventario.vue";
 const producto = ref({
   id: "0",
   nombre: "Acido Desoxirribunocleico",

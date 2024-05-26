@@ -14,8 +14,8 @@
         <q-btn
           color="primary"
           :disable="loading"
-          label="Add row"
-          @click="addRow"
+          label="Traer Datos"
+          @click="traerDatos"
         />
         <q-btn
           v-if="rows.length !== 0"
@@ -39,9 +39,13 @@
         </q-input>
       </template>
       <template #body-cell-acciones="props">
-        <q-td :props="props">
-          <q-btn icon="edit" color="primary" />
-          <q-btn icon="delete" color="red" />
+        <q-td :props="props" style="width: 100px">
+          <q-btn
+            icon="edit"
+            color="primary"
+            @click="modificarDatos(props.row)"
+          />
+          <q-btn icon="delete" color="red" @click="borrarDatos(props.row.id)" />
         </q-td>
       </template>
     </q-table>
@@ -49,9 +53,13 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { api } from "boot/axios";
+import { useQuasar } from "quasar";
 
+const $q = useQuasar();
+const props = defineProps(["refrescarTabla"]);
+const emit = defineEmits(["capturarDatos"]);
 const columns = [
   {
     name: "acciones",
@@ -68,39 +76,25 @@ const columns = [
     sortable: true,
   },
   { name: "detalle", label: "Descripcion", field: "detalle", align: "left" },
-  { name: "estado", label: "Estado", field: "estado" },
+  { name: "estado", label: "Estado", field: "estado", align: "left" },
 ];
 
 onMounted(async () => {
-  const presentacion = await api.get("/farmacia/presentacion");
-  rows.value = presentacion.data.datos;
-  console.log(presentacion.data.datos);
+  await traerDatos();
 });
-
+watch(
+  () => props.refrescarTabla,
+  async () => {
+    if (props.refrescarTabla) {
+      await traerDatos();
+      console.log("cambio el valor");
+    }
+  }
+);
 const loading = ref(false);
 const filter = ref("");
 const rowCount = ref(10);
 const rows = ref([]);
-function addRow() {
-  loading.value = true;
-  setTimeout(() => {
-    const index = Math.floor(Math.random() * (rows.value.length + 1)),
-      row = originalRows[Math.floor(Math.random() * originalRows.length)];
-
-    if (rows.value.length === 0) {
-      rowCount.value = 0;
-    }
-
-    row.id = ++rowCount.value;
-    const newRow = { ...row }; // extend({}, row, { name: `${row.name} (${row.__count})` })
-    rows.value = [
-      ...rows.value.slice(0, index),
-      newRow,
-      ...rows.value.slice(index),
-    ];
-    loading.value = false;
-  }, 500);
-}
 
 function removeRow() {
   loading.value = true;
@@ -112,5 +106,42 @@ function removeRow() {
     ];
     loading.value = false;
   }, 500);
+}
+
+async function traerDatos() {
+  const presentacion = await api.get("/farmacia/presentacion");
+  rows.value = presentacion.data.datos;
+}
+
+function modificarDatos(datos) {
+  emit("capturarDatos", datos);
+  //console.log('modificando Datos', datos);
+}
+
+async function borrarDatos(id) {
+  try {
+    $q.dialog({
+      title: "Eliminar Presentacion",
+      message: "¿Esta seguro de eliminar esta Presentacion?",
+      cancel: true,
+      persistent: true,
+    })
+      .onOk(async () => {
+        await api.delete("/farmacia/presentacion/" + id);
+        console.log("Borrado de Presentacion correctamente");
+        await traerDatos();
+      })
+      .onOk(async () => {
+        // console.log('>>>> second OK catcher')
+      })
+      .onCancel(() => {
+        // console.log('>>>> Cancel')
+      })
+      .onDismiss(() => {
+        // console.log('I am triggered on both OK and Cancel')
+      });
+  } catch (error) {
+    console.log(error);
+  }
 }
 </script>

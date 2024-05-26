@@ -5,6 +5,12 @@
     <!--<pre>{{ producto }}</pre>-->
     <q-form @submit="enviarForm" @reset="resetForm">
       <div>
+        <CrearCategoria
+          :refrescarTabla="refrescarTabla"
+          @capturarDatos="capturarDatos"
+        />
+      </div>
+      <div>
         <div class="col"></div>
         <div class="col"></div>
       </div>
@@ -32,8 +38,20 @@
         </div>
 
         <div class="col-12">
-          <q-btn v-if="!editarCategoria" label="Submit" color="primary" type="submit" style="width: 90px;"/>
-          <q-btn v-if="editarCategoria" label="Modificar" color="primary" @click="modificarCategoria" style="width: 90px;"/>
+          <q-btn
+            v-if="!editarCategoria"
+            label="Submit"
+            color="primary"
+            type="submit"
+            style="width: 90px"
+          />
+          <q-btn
+            v-if="editarCategoria"
+            label="Modificar"
+            color="primary"
+            @click="modificarCategoria"
+            style="width: 90px"
+          />
           <q-btn
             label="Reset"
             color="primary"
@@ -43,9 +61,6 @@
             type="reset"
           />
         </div>
-      </div>
-      <div>
-        <CrearCategoria :refrescarTabla="refrescarTabla" @capturarDatos="capturarDatos"/>
       </div>
     </q-form>
   </q-page>
@@ -64,7 +79,7 @@ const categoria = ref({
   nombre: "",
   detalle: "",
   estado: "ACTIVO",
-  id: ""
+  id: "",
 });
 
 const enviarForm = async () => {
@@ -72,9 +87,9 @@ const enviarForm = async () => {
     const cat = await api.post("/farmacia/categoria", categoria.value);
     resetForm();
     refrescarTabla.value = true;
-    setTimeout(()=> {
+    setTimeout(() => {
       refrescarTabla.value = false;
-    },500)
+    }, 500);
   } catch (error) {
     console.log("error: " + error);
   }
@@ -85,34 +100,33 @@ const resetForm = () => {
     nombre: "",
     detalle: "",
     estado: "ACTIVO",
-    id: ""
+    id: "",
   };
-  editarCategoria.value = false
+  editarCategoria.value = false;
 };
 
 const capturarDatos = (datos) => {
-  editarCategoria.value = true
+  editarCategoria.value = true;
   categoria.value = {
     nombre: datos.nombre,
     detalle: datos.detalle,
     estado: datos.estado,
     id: datos.id,
-  }
-  console.log('capturados', datos)
-}
-const modificarCategoria = async() => {
+  };
+  console.log("capturados", datos);
+};
+const modificarCategoria = async () => {
   try {
-    await api.put(`/farmacia/categoria/${categoria.value.id}`, categoria.value
-  )
-  resetForm()
-  refrescarTabla.value = true;
-  setTimeout(()=> {
+    await api.put(`/farmacia/categoria/${categoria.value.id}`, categoria.value);
+    resetForm();
+    refrescarTabla.value = true;
+    setTimeout(() => {
       refrescarTabla.value = false;
-    },500)
+    }, 500);
   } catch (error) {
     console.log("error: " + error);
   }
-}
+};
 </script>
 
 <style scoped type="text/css"></style>

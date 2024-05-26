@@ -13,7 +13,10 @@ const routes = [
     path: "/farmacia",
     component: () => import("layouts/Test2Layout.vue"),
     children: [
-      { path: "producto", component: () => import("src/pages/Producto.vue") },
+      {
+        path: "medicamento",
+        component: () => import("src/pages/Medicamento.vue"),
+      },
       {
         path: "categoria",
         component: () => import("src/pages/Categoria.vue"),
@@ -45,6 +48,10 @@ const routes = [
       {
         path: "crearcategoria",
         component: () => import("src/components/CrearCategoria.vue"),
+      },
+      {
+        path: "crearproveedor",
+        component: () => import("src/components/CrearProveedor.vue"),
       },
     ],
   },
