@@ -5,7 +5,7 @@
     @click="alert = true"
     style="width: 150px"
   />
-  <q-dialog v-model="alert">
+  <q-dialog v-model="alert" persistent >
     <q-card>
       <q-card-section class="q-pt-none">
         <h4>Datos del Nuevo Proveedor</h4>
@@ -70,15 +70,18 @@
       </q-card-section>
 
       <q-card-actions align="right">
-        <q-btn flat label="OK" color="primary" v-close-popup />
+        <q-btn flat label="OK" color="primary" @click="cerrarModal" />
       </q-card-actions>
     </q-card>
   </q-dialog>
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { api } from "boot/axios";
+
+const props = defineProps(["editarProveedor", "prov"]);
+const emit = defineEmits(["traerDatos", "cerrar"]);
 
 const opciones = ["ACTIVO", "INACTIVO"];
 
@@ -89,15 +92,28 @@ const proveedor = ref({
   estado: "ACTIVO",
   id: "",
 });
+const alert = ref(false);
+
+watch(()=> props.editarProveedor,()=>{
+  if(props.editarProveedor){
+    alert.value = true
+    proveedor.value = {
+      nombre: props.prov.nombre,
+      nit: props.prov.nit,
+      direccion: props.prov.direccion,
+      estado: props.prov.estado,
+      id: props.prov.id
+    }
+  }
+})
 
 const enviarForm = async () => {
   try {
     const prov = await api.post("/farmacia/proveedores", proveedor.value);
     resetForm();
-    refrescarTabla.value = true;
-    setTimeout(() => {
-      refrescarTabla.value = false;
-    }, 500);
+    alert.value = false;
+    emit("traerDatos");
+
   } catch (error) {
     console.log("error: " + error);
   }
@@ -111,20 +127,8 @@ const resetForm = () => {
     estado: "ACTIVO",
     id: "",
   };
-  editarProveedor.value = false;
 };
 
-const capturarDatos = (datos) => {
-  editarProveedor.value = true;
-  proveedor.value = {
-    nombre: datos.nombre,
-    nit: datos.nit,
-    direccion: datos.direccion,
-    estado: datos.estado,
-    id: datos.id,
-  };
-  console.log("capturados", datos);
-};
 
 const modificarProveedor = async () => {
   try {
@@ -133,15 +137,19 @@ const modificarProveedor = async () => {
       proveedor.value
     );
     resetForm();
-    refrescarTabla.value = true;
-    setTimeout(() => {
-      refrescarTabla.value = false;
-    }, 500);
+    emit("traerDatos");
+    cerrarModal()
+
   } catch (error) {
     console.log("error: " + error);
   }
 };
-const alert = ref(false);
+
+function cerrarModal() {
+  alert.value = false;
+  emit("cerrar");
+}
+
 </script>
 
 <style scoped type="text/css"></style>

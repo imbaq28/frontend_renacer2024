@@ -45,7 +45,7 @@
 </template>
 
 <script>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 
 const columns = [
   {
@@ -206,7 +206,6 @@ export default {
     return {
       columns,
       rows,
-
       loading,
       filter,
       rowCount,

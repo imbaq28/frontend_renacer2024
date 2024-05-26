@@ -18,8 +18,10 @@
           @click="traerDatos"
         />
         <CrearProveedor
-          :refrescarTabla="refrescarTabla"
-          @capturarDatos="capturarDatos"
+          @traerDatos="traerDatos"
+          @cerrar="cerrar"
+          :editarProveedor="editarProveedor"
+          :prov="proveedor"
         />
 
         <q-space />
@@ -59,7 +61,8 @@ const props = defineProps(["refrescarTabla"]);
 const emit = defineEmits(["capturarDatos"]);
 
 //const refrescarTabla = ref(false);
-const editarCategoria = ref(false);
+const editarProveedor = ref(false);
+const proveedor = ref({})
 
 const columns = [
   {
@@ -83,40 +86,26 @@ const columns = [
 onMounted(async () => {
   await traerDatos();
 });
-watch(
-  () => props.refrescarTabla,
-  async () => {
-    if (props.refrescarTabla) {
-      await traerDatos();
-      console.log("cambio el valor");
-    }
-  }
-);
+
 
 const loading = ref(false);
 const filter = ref("");
-const rowCount = ref(10);
 const rows = ref([]);
 
-function removeRow() {
-  loading.value = true;
-  setTimeout(() => {
-    const index = Math.floor(Math.random() * rows.value.length);
-    rows.value = [
-      ...rows.value.slice(0, index),
-      ...rows.value.slice(index + 1),
-    ];
-    loading.value = false;
-  }, 500);
-}
 async function traerDatos() {
   const proveedor = await api.get("/farmacia/proveedores");
   rows.value = proveedor.data.datos;
 }
 
 function modificarDatos(datos) {
-  emit("capturarDatos", datos);
+  editarProveedor.value = true;
+  proveedor.value = datos
   //console.log('modificando Datos', datos);
+}
+
+function cerrar(){
+  editarProveedor.value = false;
+  proveedor.value = {}
 }
 
 async function borrarDatos(id) {

@@ -3,8 +3,8 @@
     <div style="font-size: 75px">MEDICAMENTOS</div>
 
     <!--<pre>{{ producto }}</pre>-->
+    <Inventario />
     <q-form @submit="enviarForm" @reset="resetForm">
-      <Inventario />
       <div class="row q-col-gutter-md" style="width: 500px">
         <div class="col-12">
           <q-input
@@ -27,9 +27,13 @@
 
         <div class="col-12">
           <q-select
-            label="Categoria"
+            label="categoria"
             v-model="producto.categoria"
-            :options="opciones"
+            :options="categorias"
+            emit-value
+            map-options
+            option-value="id"
+            option-label="nombre"
           />
         </div>
         <div class="col-12">
@@ -137,8 +141,13 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import Inventario from "src/components/Inventario.vue";
+import { api } from "boot/axios";
+
+
+
+
 const producto = ref({
   id: "0",
   nombre: "Acido Desoxirribunocleico",
@@ -158,6 +167,14 @@ const producto = ref({
   estado: "",
   date: ref("2019/02/01"),
 });
+
+const categorias = ref([]);
+
+onMounted(async()=>{
+  const cat = await api.get("/farmacia/categoria")
+  console.log('se ejecuto',cat.data.datos )
+  categorias.value = cat.data.datos
+})
 
 const seleccion = ref(null);
 const opciones = ["maxima", "moderada", "minima"];
