@@ -32,7 +32,8 @@
         </div>
 
         <div class="col-12">
-          <q-btn label="Submit" color="primary" type="submit" />
+          <q-btn v-if="!editarCategoria" label="Submit" color="primary" type="submit" style="width: 90px;"/>
+          <q-btn v-if="editarCategoria" label="Modificar" color="primary" @click="modificarCategoria" style="width: 90px;"/>
           <q-btn
             label="Reset"
             color="primary"
@@ -44,32 +45,36 @@
         </div>
       </div>
       <div>
-        <CrearCategoria :refrescarDatos="refrescardatos" />
+        <CrearCategoria :refrescarTabla="refrescarTabla" @capturarDatos="capturarDatos"/>
       </div>
     </q-form>
   </q-page>
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref } from "vue";
 import { api } from "boot/axios";
 import CrearCategoria from "src/components/CrearCategoria.vue";
 
 const opciones = ["ACTIVO", "INACTIVO"];
 const refrescarTabla = ref(false);
+const editarCategoria = ref(false);
 
 const categoria = ref({
   nombre: "",
   detalle: "",
   estado: "ACTIVO",
+  id: ""
 });
 
 const enviarForm = async () => {
   try {
     const cat = await api.post("/farmacia/categoria", categoria.value);
-    refrescarTabla.value = true;
     resetForm();
-    console.log(cat);
+    refrescarTabla.value = true;
+    setTimeout(()=> {
+      refrescarTabla.value = false;
+    },500)
   } catch (error) {
     console.log("error: " + error);
   }
@@ -80,8 +85,34 @@ const resetForm = () => {
     nombre: "",
     detalle: "",
     estado: "ACTIVO",
+    id: ""
   };
+  editarCategoria.value = false
 };
+
+const capturarDatos = (datos) => {
+  editarCategoria.value = true
+  categoria.value = {
+    nombre: datos.nombre,
+    detalle: datos.detalle,
+    estado: datos.estado,
+    id: datos.id,
+  }
+  console.log('capturados', datos)
+}
+const modificarCategoria = async() => {
+  try {
+    await api.put(`/farmacia/categoria/${categoria.value.id}`, categoria.value
+  )
+  resetForm()
+  refrescarTabla.value = true;
+  setTimeout(()=> {
+      refrescarTabla.value = false;
+    },500)
+  } catch (error) {
+    console.log("error: " + error);
+  }
+}
 </script>
 
 <style scoped type="text/css"></style>

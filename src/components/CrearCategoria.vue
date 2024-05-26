@@ -1,5 +1,5 @@
 <template>
-  {{ variable }}
+  {{ props.refrescarTabla }}
   <div class="q-pa-md">
     <q-table
       flat
@@ -41,8 +41,8 @@
       </template>
       <template #body-cell-acciones="props">
         <q-td :props="props">
-          <q-btn icon="edit" color="primary" />
-          <q-btn icon="delete" color="red" />
+          <q-btn icon="edit" color="primary" @click="modificarDatos(props.row)"/>
+          <q-btn icon="delete" color="red" @click="borrarDatos(props.row.id)"/>
         </q-td>
       </template>
     </q-table>
@@ -50,10 +50,13 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { api } from "boot/axios";
-const props = defineProps(["refrescardatos"]);
-const variable = computed(() => props.refrescardatos);
+import { useQuasar } from 'quasar'
+
+const $q = useQuasar()
+const props = defineProps(["refrescarTabla"]);
+const emit = defineEmits(['capturarDatos'])
 
 const columns = [
   {
@@ -77,31 +80,17 @@ const columns = [
 onMounted(async () => {
   await traerDatos();
 });
+watch( ()=> props.refrescarTabla, async ()=>{
+  if(props.refrescarTabla){
+    await traerDatos()
+    console.log('cambio el valor')
+  }
+})
 
 const loading = ref(false);
 const filter = ref("");
 const rowCount = ref(10);
 const rows = ref([]);
-function addRow() {
-  loading.value = true;
-  setTimeout(() => {
-    const index = Math.floor(Math.random() * (rows.value.length + 1)),
-      row = originalRows[Math.floor(Math.random() * originalRows.length)];
-
-    if (rows.value.length === 0) {
-      rowCount.value = 0;
-    }
-
-    row.id = ++rowCount.value;
-    const newRow = { ...row }; // extend({}, row, { name: `${row.name} (${row.__count})` })
-    rows.value = [
-      ...rows.value.slice(0, index),
-      newRow,
-      ...rows.value.slice(index),
-    ];
-    loading.value = false;
-  }, 500);
-}
 
 function removeRow() {
   loading.value = true;
@@ -118,6 +107,35 @@ function removeRow() {
 async function traerDatos() {
   const categorias = await api.get("/farmacia/categoria");
   rows.value = categorias.data.datos;
-  console.log(categorias.data.datos);
 }
+
+function modificarDatos(datos) {
+  emit('capturarDatos', datos);
+   //console.log('modificando Datos', datos);
+}
+
+async function borrarDatos(id) {
+  try {
+    $q.dialog({
+        title: 'Eliminar categoría',
+        message: '¿Esta seguro de eliminar esta categoría?',
+        cancel: true,
+        persistent: true
+      }).onOk(async () => {
+        await api.delete("/farmacia/categoria/" + id)
+        console.log('Borrado correctamente');
+        await traerDatos();
+      }).onOk(async() => {
+        // console.log('>>>> second OK catcher')
+
+      }).onCancel(() => {
+        // console.log('>>>> Cancel')
+      }).onDismiss(() => {
+        // console.log('I am triggered on both OK and Cancel')
+      })
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 </script>
