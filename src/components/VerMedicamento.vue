@@ -18,11 +18,11 @@
           @click="traerDatos"
         />
 
-        <CrearPresentacion
+        <CrearMedicamento
           @traerDatos="traerDatos"
           @cerrar="cerrar"
-          :editarPresentacion="editarPresentacion"
-          :pres="presentacion"
+          :editarMedicamento="editarMedicamento"
+          :med="medicamento"
         />
 
         <q-space />
@@ -56,14 +56,14 @@
 import { ref, onMounted, watch } from "vue";
 import { api } from "boot/axios";
 import { useQuasar } from "quasar";
-import CrearPresentacion from "./CrearPresentacion.vue";
+import CrearMedicamento from "src/components/CrearMedicamento.vue";
 
 const $q = useQuasar();
 const props = defineProps(["refrescarTabla"]);
 const emit = defineEmits(["capturarDatos"]);
 
-const editarPresentacion = ref(false);
-const presentacion = ref({});
+const editarMedicamento = ref(false);
+const medicamento = ref({});
 
 const columns = [
   {
@@ -72,21 +72,80 @@ const columns = [
     align: "left",
     field: "acciones",
   },
+  {
+    name: "id_nombre",
+    label: "Nombre Quimico",
+    align: "left",
+    field: (row) => row.nombreProducto.nombre,
+  },
 
   {
-    name: "nombre",
-    align: "left",
-    label: "Presentacion",
-    field: "nombre",
-    sortable: true,
+    name: "id_categoria",
+    label: "Categoria",
+    field: (row) => row.categoria.nombre,
   },
-  { name: "detalle", label: "Descripcion", field: "detalle", align: "left" },
-  { name: "estado", label: "Estado", field: "estado", align: "left" },
+
+  { name: "descripcion", label: "Descripcion", field: "descripcion" },
+
+  {
+    name: "fecha_vencimiento",
+    label: "Fecha de vencimiento",
+    field: "fechaVencimiento",
+  },
+
+  {
+    name: "imagen",
+    label: "Imagen",
+    field: "imagen",
+  },
+
+  { name: "lote", label: "Numero de lote", field: "lote" },
+
+  {
+    name: "nombre_comercial",
+    align: "center",
+    label: "Nombre Comercial",
+    field: "nombreComercial",
+  },
+
+  {
+    name: "precio_compra",
+    label: "Precio de Compra",
+    field: "precioCompra",
+  },
+
+  {
+    name: "id_presentacion",
+    label: "Presentacion",
+    field: (row) => row.presentacion.nombre,
+  },
+
+  {
+    name: "id_proveedor",
+    label: "Proveedor",
+    field: (row) => row.proveedor.nombre,
+  },
+
+  {
+    name: "precio_venta",
+    label: "Precio de venta",
+    field: "precioVenta",
+  },
+
+  {
+    name: "precio_unitario",
+    label: "Precio Unitario",
+    field: "precioUnitario",
+  },
+
+  { name: "stock", label: "Stock", field: "stock" },
+  { name: "estado", label: "Estado", field: "estado" },
 ];
 
 onMounted(async () => {
   await traerDatos();
 });
+
 watch(
   () => props.refrescarTabla,
   async () => {
@@ -96,36 +155,38 @@ watch(
     }
   }
 );
+
 const loading = ref(false);
 const filter = ref("");
 const rows = ref([]);
 
 async function traerDatos() {
-  const presentacion = await api.get("/farmacia/presentacion");
-  rows.value = presentacion.data.datos;
+  const medicamento = await api.get("/farmacia/medicamento");
+  rows.value = medicamento.data.datos;
+  console.log(medicamento);
 }
 
 function modificarDatos(datos) {
-  editarPresentacion.value = true;
-  presentacion.value = datos;
+  editarMedicamento.value = true;
+  medicamento.value = datos;
 }
 
 function cerrar() {
-  editarPresentacion.value = false;
-  presentacion.value = {};
+  editarMedicamento.value = false;
+  medicamento.value = {};
 }
 
 async function borrarDatos(id) {
   try {
     $q.dialog({
-      title: "Eliminar Presentacion",
-      message: "¿Esta seguro de eliminar esta Presentacion?",
+      title: "Eliminar Medicamento",
+      message: "¿Esta seguro de eliminar esta Medicamento?",
       cancel: true,
       persistent: true,
     })
       .onOk(async () => {
-        await api.delete("/farmacia/presentacion/" + id);
-        console.log("Borrado de Presentacion correctamente");
+        await api.delete("/farmacia/medicamento/" + id);
+        console.log("Borrado de Medicamento correctamente");
         await traerDatos();
       })
       .onOk(async () => {

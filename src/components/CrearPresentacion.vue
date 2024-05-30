@@ -1,6 +1,6 @@
 <template>
   <q-btn
-    label="NUEVA CATEGORIA"
+    label="NUEVA PRES"
     color="primary"
     @click="alert = true"
     style="width: 150px"
@@ -8,21 +8,21 @@
   <q-dialog v-model="alert" persistent>
     <q-card>
       <q-card-section class="q-pt-none">
-        <h4>Datos de la nueva CATEGORIA</h4>
+        <h4>Datos de la nueva PRESENTACION</h4>
 
         <q-form @submit="enviarForm" @reset="resetForm">
           <div class="col"></div>
           <div class="row q-col-gutter-md" style="width: 500px">
             <div class="col-12">
               <q-input
-                v-model="categoria.nombre"
-                label="Nombre del tipo de Categoria:"
+                v-model="presentacion.nombre"
+                label="Nombre del tipo de Presentacion:"
               />
             </div>
 
             <div class="col-12">
               <q-input
-                v-model="categoria.detalle"
+                v-model="presentacion.detalle"
                 label="Detalles"
                 filled
                 type="textarea"
@@ -32,24 +32,24 @@
             <div class="col-12" style="width: 200px">
               <q-select
                 label="Estado"
-                v-model="categoria.estado"
+                v-model="presentacion.estado"
                 :options="opciones"
               />
             </div>
 
             <div class="col-12">
               <q-btn
-                v-if="!editarCategoria"
+                v-if="!editarPresentacion"
                 label="Submit"
                 color="primary"
                 type="submit"
                 style="width: 90px"
               />
               <q-btn
-                v-if="editarCategoria"
+                v-if="editarPresentacion"
                 label="Modificar"
                 color="primary"
-                @click="modificarCategoria"
+                @click="modificarPresentacion"
                 style="width: 90px"
               />
               <q-btn
@@ -76,12 +76,12 @@
 import { ref, watch } from "vue";
 import { api } from "boot/axios";
 
-const props = defineProps(["editarCategoria", "cat"]);
+const props = defineProps(["editarPresentacion", "pres"]);
 const emit = defineEmits(["traerDatos", "cerrar"]);
 
 const opciones = ["ACTIVO", "INACTIVO"];
 
-const categoria = ref({
+const presentacion = ref({
   nombre: "",
   detalle: "",
   estado: "ACTIVO",
@@ -91,15 +91,15 @@ const categoria = ref({
 const alert = ref(false);
 
 watch(
-  () => props.editarCategoria,
+  () => props.editarPresentacion,
   () => {
-    if (props.editarCategoria) {
+    if (props.editarPresentacion) {
       alert.value = true;
-      categoria.value = {
-        nombre: props.cat.nombre,
-        detalle: props.cat.detalle,
-        estado: props.cat.estado,
-        id: props.cat.id,
+      presentacion.value = {
+        nombre: props.pres.nombre,
+        detalle: props.pres.detalle,
+        estado: props.pres.estado,
+        id: props.pres.id,
       };
     }
   }
@@ -107,7 +107,7 @@ watch(
 
 const enviarForm = async () => {
   try {
-    const cat = await api.post("/farmacia/categoria", categoria.value);
+    const pres = await api.post("/farmacia/presentacion", presentacion.value);
     resetForm();
     alert.value = false;
     emit("traerDatos");
@@ -117,7 +117,7 @@ const enviarForm = async () => {
 };
 
 const resetForm = () => {
-  categoria.value = {
+  presentacion.value = {
     nombre: "",
     detalle: "",
     estado: "ACTIVO",
@@ -125,9 +125,12 @@ const resetForm = () => {
   };
 };
 
-const modificarCategoria = async () => {
+const modificarPresentacion = async () => {
   try {
-    await api.put(`/farmacia/categoria/${categoria.value.id}`, categoria.value);
+    await api.put(
+      `/farmacia/presentacion/${presentacion.value.id}`,
+      presentacion.value
+    );
     resetForm();
     emit("traerDatos");
     cerrarModal();
@@ -141,4 +144,5 @@ function cerrarModal() {
   emit("cerrar");
 }
 </script>
+
 <style scoped type="text/css"></style>

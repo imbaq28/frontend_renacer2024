@@ -18,6 +18,10 @@ const routes = [
         component: () => import("src/pages/Medicamento.vue"),
       },
       {
+        path: "nombre",
+        component: () => import("src/pages/Nombre.vue"),
+      },
+      {
         path: "categoria",
         component: () => import("src/pages/Categoria.vue"),
       },
@@ -38,20 +42,8 @@ const routes = [
         component: () => import("src/components/CrearUsuario.vue"),
       },
       {
-        path: "inventario",
-        component: () => import("src/components/Inventario.vue"),
-      },
-      {
         path: "ventas",
         component: () => import("src/pages/Ventas.vue"),
-      },
-      {
-        path: "crearcategoria",
-        component: () => import("src/components/CrearCategoria.vue"),
-      },
-      {
-        path: "crearproveedor",
-        component: () => import("src/components/CrearProveedor.vue"),
       },
     ],
   },

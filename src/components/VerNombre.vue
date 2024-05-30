@@ -18,11 +18,11 @@
           @click="traerDatos"
         />
 
-        <CrearPresentacion
+        <CrearNombre
           @traerDatos="traerDatos"
           @cerrar="cerrar"
-          :editarPresentacion="editarPresentacion"
-          :pres="presentacion"
+          :editarNombre="editarNombre"
+          :nom="nombre"
         />
 
         <q-space />
@@ -53,17 +53,18 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted } from "vue";
 import { api } from "boot/axios";
 import { useQuasar } from "quasar";
-import CrearPresentacion from "./CrearPresentacion.vue";
+
+import CrearNombre from "./CrearNombre.vue";
 
 const $q = useQuasar();
 const props = defineProps(["refrescarTabla"]);
 const emit = defineEmits(["capturarDatos"]);
 
-const editarPresentacion = ref(false);
-const presentacion = ref({});
+const editarNombre = ref(false);
+const nombre = ref({});
 
 const columns = [
   {
@@ -76,56 +77,47 @@ const columns = [
   {
     name: "nombre",
     align: "left",
-    label: "Presentacion",
+    label: "Categoria",
     field: "nombre",
     sortable: true,
   },
-  { name: "detalle", label: "Descripcion", field: "detalle", align: "left" },
   { name: "estado", label: "Estado", field: "estado", align: "left" },
 ];
 
 onMounted(async () => {
   await traerDatos();
 });
-watch(
-  () => props.refrescarTabla,
-  async () => {
-    if (props.refrescarTabla) {
-      await traerDatos();
-      console.log("cambio el valor");
-    }
-  }
-);
+
 const loading = ref(false);
 const filter = ref("");
 const rows = ref([]);
 
 async function traerDatos() {
-  const presentacion = await api.get("/farmacia/presentacion");
-  rows.value = presentacion.data.datos;
+  const nombre = await api.get("/farmacia/nombre");
+  rows.value = nombre.data.datos;
 }
 
 function modificarDatos(datos) {
-  editarPresentacion.value = true;
-  presentacion.value = datos;
+  editarNombre.value = true;
+  nombre.value = datos;
 }
 
 function cerrar() {
-  editarPresentacion.value = false;
-  presentacion.value = {};
+  editarNombre.value = false;
+  nombre.value = {};
 }
 
 async function borrarDatos(id) {
   try {
     $q.dialog({
-      title: "Eliminar Presentacion",
-      message: "¿Esta seguro de eliminar esta Presentacion?",
+      title: "Eliminar Nombre",
+      message: "¿Esta seguro de eliminar este Nombre?",
       cancel: true,
       persistent: true,
     })
       .onOk(async () => {
-        await api.delete("/farmacia/presentacion/" + id);
-        console.log("Borrado de Presentacion correctamente");
+        await api.delete("/farmacia/nombre/" + id);
+        console.log("Borrado de Nombre correctamente");
         await traerDatos();
       })
       .onOk(async () => {

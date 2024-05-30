@@ -52,17 +52,18 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted } from "vue";
 import { api } from "boot/axios";
 import { useQuasar } from "quasar";
 import CrearProveedor from "src/components/CrearProveedor.vue";
+
 const $q = useQuasar();
 const props = defineProps(["refrescarTabla"]);
 const emit = defineEmits(["capturarDatos"]);
 
 //const refrescarTabla = ref(false);
 const editarProveedor = ref(false);
-const proveedor = ref({})
+const proveedor = ref({});
 
 const columns = [
   {
@@ -79,6 +80,7 @@ const columns = [
     field: "nombre",
     sortable: true,
   },
+  { name: "nit", label: "NIT", field: "nit", align: "left" },
   { name: "direccion", label: "Direccion", field: "direccion", align: "left" },
   { name: "estado", label: "Estado", field: "estado", align: "left" },
 ];
@@ -86,7 +88,6 @@ const columns = [
 onMounted(async () => {
   await traerDatos();
 });
-
 
 const loading = ref(false);
 const filter = ref("");
@@ -99,13 +100,13 @@ async function traerDatos() {
 
 function modificarDatos(datos) {
   editarProveedor.value = true;
-  proveedor.value = datos
+  proveedor.value = datos;
   //console.log('modificando Datos', datos);
 }
 
-function cerrar(){
+function cerrar() {
   editarProveedor.value = false;
-  proveedor.value = {}
+  proveedor.value = {};
 }
 
 async function borrarDatos(id) {

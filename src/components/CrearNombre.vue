@@ -1,6 +1,6 @@
 <template>
   <q-btn
-    label="NUEVA CATEGORIA"
+    label="NUEVA NOM"
     color="primary"
     @click="alert = true"
     style="width: 150px"
@@ -8,48 +8,39 @@
   <q-dialog v-model="alert" persistent>
     <q-card>
       <q-card-section class="q-pt-none">
-        <h4>Datos de la nueva CATEGORIA</h4>
+        <h4>Datos del nuevo NOMBRE</h4>
 
         <q-form @submit="enviarForm" @reset="resetForm">
           <div class="col"></div>
           <div class="row q-col-gutter-md" style="width: 500px">
             <div class="col-12">
               <q-input
-                v-model="categoria.nombre"
-                label="Nombre del tipo de Categoria:"
-              />
-            </div>
-
-            <div class="col-12">
-              <q-input
-                v-model="categoria.detalle"
-                label="Detalles"
-                filled
-                type="textarea"
+                v-model="nombree.nombre"
+                label="Nombre del tipo de Nombre:"
               />
             </div>
 
             <div class="col-12" style="width: 200px">
               <q-select
                 label="Estado"
-                v-model="categoria.estado"
+                v-model="nombree.estado"
                 :options="opciones"
               />
             </div>
 
             <div class="col-12">
               <q-btn
-                v-if="!editarCategoria"
+                v-if="!editarNombre"
                 label="Submit"
                 color="primary"
                 type="submit"
                 style="width: 90px"
               />
               <q-btn
-                v-if="editarCategoria"
+                v-if="editarNombre"
                 label="Modificar"
                 color="primary"
-                @click="modificarCategoria"
+                @click="modificarNombre"
                 style="width: 90px"
               />
               <q-btn
@@ -76,14 +67,13 @@
 import { ref, watch } from "vue";
 import { api } from "boot/axios";
 
-const props = defineProps(["editarCategoria", "cat"]);
+const props = defineProps(["editarNombre", "nom"]);
 const emit = defineEmits(["traerDatos", "cerrar"]);
 
 const opciones = ["ACTIVO", "INACTIVO"];
 
-const categoria = ref({
+const nombree = ref({
   nombre: "",
-  detalle: "",
   estado: "ACTIVO",
   id: "",
 });
@@ -91,15 +81,14 @@ const categoria = ref({
 const alert = ref(false);
 
 watch(
-  () => props.editarCategoria,
+  () => props.editarNombre,
   () => {
-    if (props.editarCategoria) {
+    if (props.editarNombre) {
       alert.value = true;
-      categoria.value = {
-        nombre: props.cat.nombre,
-        detalle: props.cat.detalle,
-        estado: props.cat.estado,
-        id: props.cat.id,
+      nombree.value = {
+        nombre: props.nom.nombre,
+        estado: props.nom.estado,
+        id: props.nom.id,
       };
     }
   }
@@ -107,7 +96,7 @@ watch(
 
 const enviarForm = async () => {
   try {
-    const cat = await api.post("/farmacia/categoria", categoria.value);
+    const nom = await api.post("/farmacia/nombre", nombree.value);
     resetForm();
     alert.value = false;
     emit("traerDatos");
@@ -117,17 +106,16 @@ const enviarForm = async () => {
 };
 
 const resetForm = () => {
-  categoria.value = {
+  nombree.value = {
     nombre: "",
-    detalle: "",
     estado: "ACTIVO",
     id: "",
   };
 };
 
-const modificarCategoria = async () => {
+const modificarNombre = async () => {
   try {
-    await api.put(`/farmacia/categoria/${categoria.value.id}`, categoria.value);
+    await api.put(`/farmacia/nombre/${nombree.value.id}`, nombree.value);
     resetForm();
     emit("traerDatos");
     cerrarModal();
@@ -141,4 +129,5 @@ function cerrarModal() {
   emit("cerrar");
 }
 </script>
+
 <style scoped type="text/css"></style>

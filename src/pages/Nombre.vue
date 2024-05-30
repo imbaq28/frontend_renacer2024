@@ -1,9 +1,9 @@
 <template>
   <q-page padding>
-    <h4>Agregar Proveedores</h4>
+    <h4>NOMBRE DE MEDICAMENTO</h4>
 
     <div>
-      <VerProveedor
+      <VerNombre
         :refrescarTabla="refrescarTabla"
         @capturarDatos="capturarDatos"
       />
@@ -12,7 +12,7 @@
 </template>
 
 <script setup>
-import VerProveedor from "src/components/VerProveedor.vue";
+import VerNombre from "src/components/VerNombre.vue";
 </script>
 
 <style scoped type="text/css"></style>

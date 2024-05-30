@@ -18,11 +18,11 @@
           @click="traerDatos"
         />
 
-        <CrearPresentacion
+        <CrearCategoria
           @traerDatos="traerDatos"
           @cerrar="cerrar"
-          :editarPresentacion="editarPresentacion"
-          :pres="presentacion"
+          :editarCategoria="editarCategoria"
+          :cat="categoria"
         />
 
         <q-space />
@@ -53,17 +53,17 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted } from "vue";
 import { api } from "boot/axios";
 import { useQuasar } from "quasar";
-import CrearPresentacion from "./CrearPresentacion.vue";
+import CrearCategoria from "src/components/CrearCategoria.vue";
 
 const $q = useQuasar();
 const props = defineProps(["refrescarTabla"]);
 const emit = defineEmits(["capturarDatos"]);
 
-const editarPresentacion = ref(false);
-const presentacion = ref({});
+const editarCategoria = ref(false);
+const categoria = ref({});
 
 const columns = [
   {
@@ -76,7 +76,7 @@ const columns = [
   {
     name: "nombre",
     align: "left",
-    label: "Presentacion",
+    label: "Categoria",
     field: "nombre",
     sortable: true,
   },
@@ -87,45 +87,37 @@ const columns = [
 onMounted(async () => {
   await traerDatos();
 });
-watch(
-  () => props.refrescarTabla,
-  async () => {
-    if (props.refrescarTabla) {
-      await traerDatos();
-      console.log("cambio el valor");
-    }
-  }
-);
+
 const loading = ref(false);
 const filter = ref("");
 const rows = ref([]);
 
 async function traerDatos() {
-  const presentacion = await api.get("/farmacia/presentacion");
-  rows.value = presentacion.data.datos;
+  const categoria = await api.get("/farmacia/categoria");
+  rows.value = categoria.data.datos;
 }
 
 function modificarDatos(datos) {
-  editarPresentacion.value = true;
-  presentacion.value = datos;
+  editarCategoria.value = true;
+  categoria.value = datos;
 }
 
 function cerrar() {
-  editarPresentacion.value = false;
-  presentacion.value = {};
+  editarCategoria.value = false;
+  categoria.value = {};
 }
 
 async function borrarDatos(id) {
   try {
     $q.dialog({
-      title: "Eliminar Presentacion",
-      message: "¿Esta seguro de eliminar esta Presentacion?",
+      title: "Eliminar Categoria",
+      message: "¿Esta seguro de eliminar esta Categoria?",
       cancel: true,
       persistent: true,
     })
       .onOk(async () => {
-        await api.delete("/farmacia/presentacion/" + id);
-        console.log("Borrado de Presentacion correctamente");
+        await api.delete("/farmacia/categoria/" + id);
+        console.log("Borrado de Categoria correctamente");
         await traerDatos();
       })
       .onOk(async () => {
