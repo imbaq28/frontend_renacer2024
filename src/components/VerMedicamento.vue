@@ -18,7 +18,7 @@
           @click="traerDatos"
         />
 
-        <CrearMedicamento
+        <CrearCompra
           @traerDatos="traerDatos"
           @cerrar="cerrar"
           :editarMedicamento="editarMedicamento"
@@ -57,6 +57,7 @@ import { ref, onMounted, watch } from "vue";
 import { api } from "boot/axios";
 import { useQuasar } from "quasar";
 import CrearMedicamento from "src/components/CrearMedicamento.vue";
+import CrearCompra from "./CrearCompra.vue";
 
 const $q = useQuasar();
 const props = defineProps(["refrescarTabla"]);
@@ -74,12 +75,12 @@ const columns = [
   },
   {
     name: "id_nombre",
-    label: "Nombre Quimico",
+    label: "Nombre Comercial",
     align: "left",
     field: (row) => row.nombreProducto.nombre,
   },
 
-  {
+  /*{
     name: "id_categoria",
     label: "Categoria",
     field: (row) => row.categoria.nombre,
@@ -125,7 +126,7 @@ const columns = [
     label: "Proveedor",
     field: (row) => row.proveedor.nombre,
   },
-
+*/
   {
     name: "precio_venta",
     label: "Precio de venta",

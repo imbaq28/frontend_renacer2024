@@ -109,6 +109,19 @@
 
             <q-item-section> NOMBRE </q-item-section>
           </q-item>
+
+          <q-item
+            clickable
+            v-ripple
+            to="/farmacia/compras"
+            active-class="my-menu-link"
+          >
+            <q-item-section avatar>
+              <q-icon name="today" />
+            </q-item-section>
+
+            <q-item-section> COMPRAS </q-item-section>
+          </q-item>
         </q-list>
       </q-scroll-area>
 

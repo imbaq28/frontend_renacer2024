@@ -18,11 +18,11 @@
           @click="traerDatos"
         />
 
-        <CrearNombre
+        <CrearCompra
           @traerDatos="traerDatos"
           @cerrar="cerrar"
-          :editarNombre="editarNombre"
-          :nom="nombre"
+          :editarCompra="editarCompra"
+          :comp="compra"
         />
 
         <q-space />
@@ -53,18 +53,17 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { api } from "boot/axios";
 import { useQuasar } from "quasar";
-
-import CrearNombre from "./CrearNombre.vue";
+import CrearCompra from "src/components/CrearCompra.vue";
 
 const $q = useQuasar();
 const props = defineProps(["refrescarTabla"]);
 const emit = defineEmits(["capturarDatos"]);
 
-const editarNombre = ref(false);
-const nombre = ref({});
+const editarCompra = ref(false);
+const compra = ref({});
 
 const columns = [
   {
@@ -73,75 +72,85 @@ const columns = [
     align: "left",
     field: "acciones",
   },
+  {
+    name: "id_nombre",
+    label: "Nombre Comercial",
+    align: "left",
+    field: (row) => row.nombreProducto.nombre,
+  },
+
+  { name: "cantidad", label: "Cantidad", field: "cantidad" },
+
+  { name: "observaciones", label: "Observaciones", field: "observaciones" },
 
   {
-    name: "nombre",
-    align: "left",
-    label: "Nombre Comercial",
-    field: "nombre",
+    name: "fecha_vencimiento",
+    label: "Fecha de vencimiento",
+    field: "fechaVencimiento",
   },
+
+  { name: "lote", label: "Numero de lote", field: "lote" },
+
   {
-    name: "idPresentacion",
-    label: "Presentación",
-    field: (row) => row.presentacion.nombre,
-    align: "left",
+    name: "precioCompra",
+    label: "Precio de Compra",
+    field: "precioCompra",
   },
+
   {
-    name: "idCategoria",
-    label: "Categoria",
-    field: (row) => row.categoria.nombre,
-    align: "left",
+    name: "idProveedor",
+    label: "Proveedor",
+    field: (row) => row.proveedor.nombre,
   },
-  {
-    name: "nombreQuimico",
-    label: "Nombre Químico",
-    field: "nombreQuimico",
-    align: "left",
-  },
-  {
-    name: "descripcion",
-    label: "Descripción",
-    field: "descripcion",
-    align: "left",
-  },
-  { name: "imagen", label: "Imagen", field: "imagen", align: "left" },
-  { name: "estado", label: "Estado", field: "estado", align: "left" },
+
+  { name: "estado", label: "Estado", field: "estado" },
 ];
 
 onMounted(async () => {
   await traerDatos();
 });
 
+watch(
+  () => props.refrescarTabla,
+  async () => {
+    if (props.refrescarTabla) {
+      await traerDatos();
+      console.log("cambio el valor");
+    }
+  }
+);
+
 const loading = ref(false);
 const filter = ref("");
 const rows = ref([]);
 
 async function traerDatos() {
-  const nombre = await api.get("/farmacia/nombre");
-  rows.value = nombre.data.datos;
+  const compra = await api.get("/farmacia/compras");
+  rows.value = compra.data.datos;
+  console.log("Esto es una compra", compra);
 }
 
 function modificarDatos(datos) {
-  editarNombre.value = true;
-  nombre.value = datos;
+  editarCompra.value = true;
+  compra.value = datos;
 }
 
 function cerrar() {
-  editarNombre.value = false;
-  nombre.value = {};
+  editarCompra.value = false;
+  compra.value = {};
 }
 
 async function borrarDatos(id) {
   try {
     $q.dialog({
-      title: "Eliminar Nombre",
-      message: "¿Esta seguro de eliminar este Nombre?",
+      title: "Eliminar Compra",
+      message: "¿Esta seguro de eliminar esta COmpra?",
       cancel: true,
       persistent: true,
     })
       .onOk(async () => {
-        await api.delete("/farmacia/nombre/" + id);
-        console.log("Borrado de Nombre correctamente");
+        await api.delete("/farmacia/compras/" + id);
+        console.log("Borrado de Medicamento correctamente");
         await traerDatos();
       })
       .onOk(async () => {

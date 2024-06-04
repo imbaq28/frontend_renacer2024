@@ -24,7 +24,7 @@ function simulateProgress(number) {
           :loading="loading[3]"
           color="primary"
           @click="simulateProgress(3)"
-          to="/login"
+          to="/log/login"
           style="width: 150px"
         >
           Ingresar

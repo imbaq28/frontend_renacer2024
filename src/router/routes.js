@@ -6,6 +6,16 @@ const routes = [
     children: [
       //{ path: "", component: () => import("pages/IndexPage.vue") },
       //{ path: "login", component: () => import("pages/log.vue") },
+      //{ path: "login", component: () => import("src/pages/LoginPage.vue") },
+    ],
+  },
+  {
+    path: "/log",
+
+    component: () => import("layouts/Layout.vue"),
+    children: [
+      //{ path: "", component: () => import("pages/IndexPage.vue") },
+      //{ path: "login", component: () => import("pages/log.vue") },
       { path: "login", component: () => import("src/pages/LoginPage.vue") },
     ],
   },
@@ -44,6 +54,10 @@ const routes = [
       {
         path: "ventas",
         component: () => import("src/pages/Ventas.vue"),
+      },
+      {
+        path: "compras",
+        component: () => import("src/pages/Compra.vue"),
       },
     ],
   },

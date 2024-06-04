@@ -1,6 +1,6 @@
 <template>
   <q-btn
-    label="NUEVA NOM"
+    label="NUEVO NOM"
     color="primary"
     @click="alert = true"
     style="width: 150px"
@@ -14,10 +14,45 @@
           <div class="col"></div>
           <div class="row q-col-gutter-md" style="width: 500px">
             <div class="col-12">
-              <q-input
-                v-model="nombree.nombre"
-                label="Nombre del tipo de Nombre:"
+              <q-input v-model="nombree.nombre" label="Nombre Comercial:" />
+            </div>
+
+            <div class="col-12">
+              <q-select
+                label="Presentación"
+                v-model="nombree.idPresentacion"
+                :options="presentaciones"
+                emit-value
+                map-options
+                option-value="id"
+                option-label="nombre"
               />
+            </div>
+            <div class="col-12">
+              <q-select
+                label="Categoria"
+                v-model="nombree.idCategoria"
+                :options="categorias"
+                emit-value
+                map-options
+                option-value="id"
+                option-label="nombre"
+              />
+            </div>
+
+            <div class="col-12">
+              <q-input
+                v-model="nombree.nombreQuimico"
+                label="Nombre Químico:"
+              />
+            </div>
+
+            <div class="col-12">
+              <q-input v-model="nombree.descripcion" label="Descripción:" />
+            </div>
+
+            <div class="col-12">
+              <q-input v-model="nombree.imagen" label="Imágen:" />
             </div>
 
             <div class="col-12" style="width: 200px">
@@ -64,7 +99,7 @@
 </template>
 
 <script setup>
-import { ref, watch } from "vue";
+import { ref, watch, onMounted } from "vue";
 import { api } from "boot/axios";
 
 const props = defineProps(["editarNombre", "nom"]);
@@ -74,11 +109,28 @@ const opciones = ["ACTIVO", "INACTIVO"];
 
 const nombree = ref({
   nombre: "",
+  idPresentacion: "",
+  idCategoria: "",
+  nombreQuimico: "",
+  descripcion: "",
+  imagen: "",
   estado: "ACTIVO",
   id: "",
 });
 
 const alert = ref(false);
+const categorias = ref([]);
+const presentaciones = ref([]);
+
+onMounted(async () => {
+  const cat = await api.get("/farmacia/categoria");
+  console.log("se ejecuto", cat.data.datos);
+  categorias.value = cat.data.datos;
+
+  const pres = await api.get("/farmacia/presentacion");
+  console.log("se ejecuto", pres.data.datos);
+  presentaciones.value = pres.data.datos;
+});
 
 watch(
   () => props.editarNombre,
@@ -87,6 +139,11 @@ watch(
       alert.value = true;
       nombree.value = {
         nombre: props.nom.nombre,
+        idPresentacion: props.nom.idPresentacion,
+        idCategoria: props.nom.idCategoria,
+        nombreQuimico: props.nom.nombreQuimico,
+        descripcion: props.nom.descripcion,
+        imagen: props.nom.imagen,
         estado: props.nom.estado,
         id: props.nom.id,
       };
@@ -108,6 +165,11 @@ const enviarForm = async () => {
 const resetForm = () => {
   nombree.value = {
     nombre: "",
+    idPresentacion: "",
+    idCategoria: "",
+    nombreQuimico: "",
+    descripcion: "",
+    imagen: "",
     estado: "ACTIVO",
     id: "",
   };

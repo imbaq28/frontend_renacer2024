@@ -24,7 +24,16 @@ function simulateProgress(number) {
 </script>
 
 <template>
-  <div class="text-h3 text-center q-pa-sm q-page padding">Login</div>
+  <div
+    class="text-h3 text-center q-pa-sm q-page padding"
+    style="font-family: Single Day, cursive"
+  >
+    <br />
+
+    Sistema Web de Compras, Ventas y Control de Inventario
+    <br />
+    de Productos y Medicamentos
+  </div>
   <div class="login">
     <div class="col-6">
       <q-img src="/images/ren.jpg" class="imagen"> </q-img>
