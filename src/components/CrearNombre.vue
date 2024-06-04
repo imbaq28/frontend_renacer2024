@@ -101,9 +101,11 @@
 <script setup>
 import { ref, watch, onMounted } from "vue";
 import { api } from "boot/axios";
+import { useQuasar } from "quasar";
 
 const props = defineProps(["editarNombre", "nom"]);
 const emit = defineEmits(["traerDatos", "cerrar"]);
+const $q = useQuasar();
 
 const opciones = ["ACTIVO", "INACTIVO"];
 
@@ -153,10 +155,30 @@ watch(
 
 const enviarForm = async () => {
   try {
-    const nom = await api.post("/farmacia/nombre", nombree.value);
-    resetForm();
-    alert.value = false;
-    emit("traerDatos");
+    if (nombree.value.nombre.length > 0) {
+      const nom = await api.post("/farmacia/nombre", nombree.value);
+      $q.notify({
+        position: "bottom",
+        timeout: 4500,
+        color: "primary",
+        textColor: "white",
+        actions: [{ icon: "close", color: "white" }],
+        message: "MEDICAMENTO CREADO",
+      });
+      resetForm();
+      alert.value = false;
+      emit("traerDatos");
+    } else {
+      $q.notify({
+        position: "bottom",
+        timeout: 4500,
+        color: "red-5",
+        textColor: "White",
+        actions: [{ icon: "close", color: "white" }],
+        message:
+          "El nombre comercial de MEDICAMENTO y el proveedor es OBLIGATORIO",
+      });
+    }
   } catch (error) {
     console.log("error: " + error);
   }
@@ -178,6 +200,14 @@ const resetForm = () => {
 const modificarNombre = async () => {
   try {
     await api.put(`/farmacia/nombre/${nombree.value.id}`, nombree.value);
+    $q.notify({
+      position: "bottom",
+      timeout: 3500,
+      color: "purple",
+      textColor: "White",
+      actions: [{ icon: "close", color: "white" }],
+      message: `El medicamento ${nombree.value.nombre} a sido MODIFICADO`,
+    });
     resetForm();
     emit("traerDatos");
     cerrarModal();

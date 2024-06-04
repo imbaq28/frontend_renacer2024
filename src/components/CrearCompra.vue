@@ -153,7 +153,10 @@
 <script setup>
 import { ref, watch, onMounted } from "vue";
 import { api } from "boot/axios";
-import VerMedicamento from "./VerMedicamento.vue";
+//import VerMedicamento from "./VerMedicamento.vue";
+import { useQuasar } from "quasar";
+
+const $q = useQuasar();
 
 const props = defineProps(["editarCompra", "comp"]);
 const emit = defineEmits(["traerDatos", "cerrar"]);
@@ -228,11 +231,30 @@ function filterFn(val, update, abort) {
 
 const enviarForm = async () => {
   try {
-    console.log("COMPRA", compra.value);
-    const comp = await api.post("/farmacia/compras", compra.value);
-    resetForm();
-    alert.value = false;
-    emit("traerDatos");
+    console.log("COMPRAS TEST", compra.value);
+    if (compra.value.idNombre.length > 0) {
+      const comp = await api.post("/farmacia/compras", compra.value);
+      $q.notify({
+        position: "bottom",
+        timeout: 3500,
+        color: "primary",
+        textColor: "white",
+        actions: [{ icon: "close", color: "white" }],
+        message: "COMPRA CREADA",
+      });
+      resetForm();
+      alert.value = false;
+      emit("traerDatos");
+    } else {
+      $q.notify({
+        position: "bottom",
+        timeout: 3500,
+        color: "red-5",
+        textColor: "White",
+        actions: [{ icon: "close", color: "white" }],
+        message: "Falta el medicamento a Comprar",
+      });
+    }
   } catch (error) {
     console.log("error: " + error);
   }
@@ -256,6 +278,14 @@ const modificarCompra = async () => {
   try {
     console.log("MODIFICAR COMPRA", compra.value);
     await api.put(`/farmacia/compras/${compra.value.id}`, compra.value);
+    $q.notify({
+      position: "bottom",
+      timeout: 3500,
+      color: "purple",
+      textColor: "White",
+      actions: [{ icon: "close", color: "white" }],
+      message: "COMPRA MODIFICADA",
+    });
     resetForm();
     emit("traerDatos");
     cerrarModal();

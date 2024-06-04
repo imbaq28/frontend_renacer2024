@@ -142,6 +142,13 @@ async function borrarDatos(id) {
       .onOk(async () => {
         await api.delete("/farmacia/nombre/" + id);
         console.log("Borrado de Nombre correctamente");
+        $q.notify({
+          position: "bottom",
+          timeout: 4500,
+          textColor: "white",
+          actions: [{ icon: "close", color: "white" }],
+          message: "NOMBRE DE MEDICAMENTO ELIMINADO",
+        });
         await traerDatos();
       })
       .onOk(async () => {

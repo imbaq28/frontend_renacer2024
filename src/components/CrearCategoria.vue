@@ -17,6 +17,11 @@
               <q-input
                 v-model="categoria.nombre"
                 label="Nombre del tipo de Categoria:"
+                :rules="[
+                  (val =
+                    (val && val.length > 0) ||
+                    'El nombre de la categoria es obligatorio...'),
+                ]"
               />
             </div>
 
@@ -45,6 +50,7 @@
                 type="submit"
                 style="width: 90px"
               />
+
               <q-btn
                 v-if="editarCategoria"
                 label="Modificar"
@@ -75,11 +81,14 @@
 <script setup>
 import { ref, watch } from "vue";
 import { api } from "boot/axios";
+import { useQuasar } from "quasar";
 
 const props = defineProps(["editarCategoria", "cat"]);
 const emit = defineEmits(["traerDatos", "cerrar"]);
 
 const opciones = ["ACTIVO", "INACTIVO"];
+
+const $q = useQuasar();
 
 const categoria = ref({
   nombre: "",
@@ -107,10 +116,29 @@ watch(
 
 const enviarForm = async () => {
   try {
-    const cat = await api.post("/farmacia/categoria", categoria.value);
-    resetForm();
-    alert.value = false;
-    emit("traerDatos");
+    if (categoria.value.nombre.length > 0) {
+      const cat = await api.post("/farmacia/categoria", categoria.value);
+      $q.notify({
+        position: "bottom",
+        timeout: 4500,
+        color: "primary",
+        textColor: "white",
+        actions: [{ icon: "close", color: "white" }],
+        message: "CATEGORIA CREADA",
+      });
+      resetForm();
+      alert.value = false;
+      emit("traerDatos");
+    } else {
+      $q.notify({
+        position: "bottom",
+        timeout: 4500,
+        color: "red-5",
+        textColor: "White",
+        actions: [{ icon: "close", color: "white" }],
+        message: "El nombre de categoria es OBLIGATORIO",
+      });
+    }
   } catch (error) {
     console.log("error: " + error);
   }
@@ -128,6 +156,14 @@ const resetForm = () => {
 const modificarCategoria = async () => {
   try {
     await api.put(`/farmacia/categoria/${categoria.value.id}`, categoria.value);
+    $q.notify({
+      position: "bottom",
+      timeout: 4500,
+      color: "purple",
+      textColor: "White",
+      actions: [{ icon: "close", color: "white" }],
+      message: `Categoria ${categoria.value.nombre} MODIFICADA`,
+    });
     resetForm();
     emit("traerDatos");
     cerrarModal();

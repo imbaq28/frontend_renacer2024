@@ -79,11 +79,13 @@
 <script setup>
 import { ref, watch } from "vue";
 import { api } from "boot/axios";
+import { useQuasar } from "quasar";
 
 const props = defineProps(["editarProveedor", "prov"]);
 const emit = defineEmits(["traerDatos", "cerrar"]);
 
 const opciones = ["ACTIVO", "INACTIVO"];
+const $q = useQuasar();
 
 const proveedor = ref({
   nombre: "",
@@ -113,10 +115,30 @@ watch(
 const enviarForm = async () => {
   try {
     console.log(proveedor.value);
-    const prov = await api.post("/farmacia/proveedores", proveedor.value);
-    resetForm();
-    alert.value = false;
-    emit("traerDatos");
+    if (proveedor.value.nombre.length > 0) {
+      const prov = await api.post("/farmacia/proveedores", proveedor.value);
+      $q.notify({
+        position: "bottom",
+        timeout: 3500,
+        color: "primary",
+        textColor: "white",
+        actions: [{ icon: "close", color: "white" }],
+        message: "PROVEEDOR CREADO",
+      });
+
+      resetForm();
+      alert.value = false;
+      emit("traerDatos");
+    } else {
+      $q.notify({
+        position: "bottom",
+        timeout: 3500,
+        color: "red-5",
+        textColor: "White",
+        actions: [{ icon: "close", color: "white" }],
+        message: "El nombre del PROVEEDOR es OBLIGATORIO",
+      });
+    }
   } catch (error) {
     console.log("error: " + error);
   }
@@ -138,6 +160,15 @@ const modificarProveedor = async () => {
       `/farmacia/proveedores/${proveedor.value.id}`,
       proveedor.value
     );
+    $q.notify({
+      position: "bottom",
+      timeout: 3500,
+      color: "purple",
+      textColor: "white",
+      actions: [{ icon: "close", color: "white" }],
+      message: `proveedor ${proveedor.value.nombre} a sido MODIFICADO`,
+    });
+
     resetForm();
     emit("traerDatos");
     cerrarModal();

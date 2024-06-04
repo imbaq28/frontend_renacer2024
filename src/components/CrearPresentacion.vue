@@ -75,11 +75,13 @@
 <script setup>
 import { ref, watch } from "vue";
 import { api } from "boot/axios";
+import { useQuasar } from "quasar";
 
 const props = defineProps(["editarPresentacion", "pres"]);
 const emit = defineEmits(["traerDatos", "cerrar"]);
 
 const opciones = ["ACTIVO", "INACTIVO"];
+const $q = useQuasar();
 
 const presentacion = ref({
   nombre: "",
@@ -107,10 +109,29 @@ watch(
 
 const enviarForm = async () => {
   try {
-    const pres = await api.post("/farmacia/presentacion", presentacion.value);
-    resetForm();
-    alert.value = false;
-    emit("traerDatos");
+    if (presentacion.value.nombre.length > 0) {
+      const pres = await api.post("/farmacia/presentacion", presentacion.value);
+      $q.notify({
+        position: "bottom",
+        timeout: 3500,
+        color: "primary",
+        textColor: "white",
+        actions: [{ icon: "close", color: "white" }],
+        message: "PRESENTACION CREADA",
+      });
+      resetForm();
+      alert.value = false;
+      emit("traerDatos");
+    } else {
+      $q.notify({
+        position: "bottom",
+        timeout: 3500,
+        color: "red-5",
+        textColor: "White",
+        actions: [{ icon: "close", color: "white" }],
+        message: "El nombre de PRESENTACION es OBLIGATORIO",
+      });
+    }
   } catch (error) {
     console.log("error: " + error);
   }
@@ -131,6 +152,14 @@ const modificarPresentacion = async () => {
       `/farmacia/presentacion/${presentacion.value.id}`,
       presentacion.value
     );
+    $q.notify({
+      position: "bottom",
+      timeout: 3500,
+      color: "purple",
+      textColor: "White",
+      actions: [{ icon: "close", color: "white" }],
+      message: `El tipo de presentacion ${presentacion.value.nombre} a sido MODIFICADO`,
+    });
     resetForm();
     emit("traerDatos");
     cerrarModal();

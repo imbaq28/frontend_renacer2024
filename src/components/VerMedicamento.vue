@@ -18,7 +18,7 @@
           @click="traerDatos"
         />
 
-        <CrearCompra
+        <CrearMedicamento
           @traerDatos="traerDatos"
           @cerrar="cerrar"
           :editarMedicamento="editarMedicamento"
@@ -168,6 +168,7 @@ async function traerDatos() {
 }
 
 function modificarDatos(datos) {
+  console.log("MODIFICANDO MEDICAMENTO", medicamento.value);
   editarMedicamento.value = true;
   medicamento.value = datos;
 }

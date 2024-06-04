@@ -1,12 +1,4 @@
-<template>
-  <CrearCompra />
-  <q-dialog v-model="alert" persistent>
-    <q-card>
-      <q-card-section class="q-pt-none">
-        <h4>Datos del nuevo MEDICAMENTO</h4>
-
-        <q-form @submit="enviarForm" @reset="resetForm">
-          <div class="col"></div>
+<div class="col"></div>
           <div class="row q-col-gutter-md" style="width: 500px">
             <q-select
               filled
@@ -81,7 +73,6 @@
                 type="submit"
                 style="width: 90px"
               />
-
               <q-btn
                 v-if="editarMedicamento"
                 label="Modificar"
@@ -99,112 +90,3 @@
               />
             </div>
           </div>
-        </q-form>
-      </q-card-section>
-
-      <q-card-actions align="right">
-        <q-btn flat label="OK" color="primary" @click="cerrarModal" />
-      </q-card-actions>
-    </q-card>
-  </q-dialog>
-</template>
-<script setup>
-import { ref, watch, onMounted } from "vue";
-import { api } from "boot/axios";
-import CrearCompra from "./CrearCompra.vue";
-import { useQuasar } from "quasar";
-
-const props = defineProps(["editarMedicamento", "med"]);
-const emit = defineEmits(["traerDatos", "cerrar"]);
-
-const opciones = ["ACTIVO", "INACTIVO"];
-const $q = useQuasar();
-
-const medicamento = ref({
-  id: "",
-  idNombre: "",
-  precioVenta: 0.0,
-  precioUnitario: 0.0,
-  stock: 0,
-  estado: "ACTIVO",
-});
-
-const alert = ref(false);
-
-const nombres = ref([]);
-
-onMounted(async () => {
-  const noms = await api.get("/farmacia/nombre");
-  console.log("se ejecuto", noms.data.datos);
-  nombres.value = noms.data.datos;
-});
-
-watch(
-  () => props.editarMedicamento,
-  () => {
-    if (props.editarMedicamento) {
-      alert.value = true;
-      medicamento.value = {
-        id: props.med.id,
-        idNombre: props.med.idNombre,
-        precioVenta: props.med.precioVenta,
-        precioUnitario: props.med.precioUnitario,
-        stock: props.med.stock,
-        estado: props.med.estado,
-      };
-    }
-  }
-);
-
-const enviarForm = async () => {
-  try {
-    console.log("MEDICAMENTO", medicamento.value);
-    const med = await api.post("/farmacia/medicamento", medicamento.value);
-
-    resetForm();
-    alert.value = false;
-    emit("traerDatos");
-  } catch (error) {
-    console.log("error: " + error);
-  }
-};
-
-const resetForm = () => {
-  medicamento.value = {
-    id: "",
-    idNombre: "",
-    precioVenta: 0.0,
-    precioUnitario: 0.0,
-    stock: 0,
-    estado: "ACTIVO",
-  };
-};
-
-const modificarMedicamento = async () => {
-  try {
-    await api.put(
-      `/farmacia/medicamento/${medicamento.value.id}`,
-      medicamento.value
-    );
-    $q.notify({
-      position: "bottom",
-      timeout: 4500,
-      color: "purple",
-      textColor: "White",
-      actions: [{ icon: "close", color: "white" }],
-      message: `El precio de venta y el precio unitario del medicamento ${medicamento.value.idNombre} han sido MODIFICADOS`,
-    });
-    resetForm();
-    emit("traerDatos");
-    cerrarModal();
-  } catch (error) {
-    console.log("error: " + error);
-  }
-};
-
-function cerrarModal() {
-  alert.value = false;
-  emit("cerrar");
-}
-</script>
-<style scoped type="text/css"></style>

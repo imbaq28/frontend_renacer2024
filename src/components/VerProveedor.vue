@@ -101,7 +101,6 @@ async function traerDatos() {
 function modificarDatos(datos) {
   editarProveedor.value = true;
   proveedor.value = datos;
-  //console.log('modificando Datos', datos);
 }
 
 function cerrar() {
@@ -120,6 +119,13 @@ async function borrarDatos(id) {
       .onOk(async () => {
         await api.delete("/farmacia/proveedores/" + id);
         console.log("Borrado de Proveedor correctamente");
+        $q.notify({
+          position: "bottom",
+          timeout: 4500,
+          textColor: "white",
+          actions: [{ icon: "close", color: "white" }],
+          message: "PROVEEDOR ELIMINADO",
+        });
         await traerDatos();
       })
       .onOk(async () => {

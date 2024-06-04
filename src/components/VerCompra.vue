@@ -151,6 +151,13 @@ async function borrarDatos(id) {
       .onOk(async () => {
         await api.delete("/farmacia/compras/" + id);
         console.log("Borrado de Medicamento correctamente");
+        $q.notify({
+          position: "bottom",
+          timeout: 4500,
+          textColor: "white",
+          actions: [{ icon: "close", color: "white" }],
+          message: "COMPRA DE MEDICAMENTO ELIMINADA",
+        });
         await traerDatos();
       })
       .onOk(async () => {

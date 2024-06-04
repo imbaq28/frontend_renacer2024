@@ -126,6 +126,13 @@ async function borrarDatos(id) {
       .onOk(async () => {
         await api.delete("/farmacia/presentacion/" + id);
         console.log("Borrado de Presentacion correctamente");
+        $q.notify({
+          position: "bottom",
+          timeout: 4500,
+          textColor: "white",
+          actions: [{ icon: "close", color: "white" }],
+          message: "PRESENTACION ELIMINADA",
+        });
         await traerDatos();
       })
       .onOk(async () => {

@@ -118,6 +118,13 @@ async function borrarDatos(id) {
       .onOk(async () => {
         await api.delete("/farmacia/categoria/" + id);
         console.log("Borrado de Categoria correctamente");
+        $q.notify({
+          position: "bottom",
+          timeout: 4500,
+          textColor: "white",
+          actions: [{ icon: "close", color: "white" }],
+          message: "CATEGORIA ELIMINADA",
+        });
         await traerDatos();
       })
       .onOk(async () => {
