@@ -7,6 +7,7 @@
       :rows="rows"
       :columns="columns"
       row-key="id"
+      :rows-per-page-options="[10, 15, 20, 25]"
       :filter="filter"
       :loading="loading"
     >
@@ -38,13 +39,22 @@
         </q-input>
       </template>
       <template #body-cell-acciones="props">
-        <q-td :props="props" style="width: 100px">
+        <q-td :props="props" style="width: 50px">
           <q-btn
             icon="edit"
             color="primary"
             @click="modificarDatos(props.row)"
+            style="width: 25px"
+            padding="2px"
           />
-          <q-btn icon="delete" color="red" @click="borrarDatos(props.row.id)" />
+
+          <q-btn
+            icon="delete"
+            color="red"
+            @click="borrarDatos(props.row.id)"
+            style="width: 25px"
+            padding="2px"
+          />
         </q-td>
       </template>
     </q-table>
@@ -64,11 +74,12 @@ const emit = defineEmits(["capturarDatos"]);
 //const refrescarTabla = ref(false);
 const editarProveedor = ref(false);
 const proveedor = ref({});
+const provs = ref({});
 
 const columns = [
   {
     name: "acciones",
-    label: "Botones",
+    label: "Edit/Eli",
     align: "left",
     field: "acciones",
   },
@@ -96,6 +107,7 @@ const rows = ref([]);
 async function traerDatos() {
   const proveedor = await api.get("/farmacia/proveedores");
   rows.value = proveedor.data.datos;
+  provs.value = proveedor.data.datos;
 }
 
 function modificarDatos(datos) {
@@ -117,14 +129,14 @@ async function borrarDatos(id) {
       persistent: true,
     })
       .onOk(async () => {
+        const del = provs.value.find((nombre) => nombre.id === id);
         await api.delete("/farmacia/proveedores/" + id);
-        console.log("Borrado de Proveedor correctamente");
         $q.notify({
           position: "bottom",
           timeout: 4500,
           textColor: "white",
           actions: [{ icon: "close", color: "white" }],
-          message: "PROVEEDOR ELIMINADO",
+          message: `PROVEEDOR ${del.nombre} ELIMINADO`,
         });
         await traerDatos();
       })
@@ -139,6 +151,14 @@ async function borrarDatos(id) {
       });
   } catch (error) {
     console.log(error);
+    $q.notify({
+      position: "bottom",
+      timeout: 3500,
+      color: "red-5",
+      textColor: "White",
+      actions: [{ icon: "close", color: "white" }],
+      message: `ERROR, el Proveedor ${del.nombre} no pudo ser eliminado`,
+    });
   }
 }
 </script>

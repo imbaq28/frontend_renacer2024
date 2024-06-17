@@ -14,7 +14,16 @@
           <div class="col"></div>
           <div class="row q-col-gutter-md" style="width: 500px">
             <div class="col-12">
-              <q-input v-model="nombree.nombre" label="Nombre Comercial:" />
+              <q-input
+                v-model="nombree.nombre"
+                label="Nombre Comercial:"
+                :rules="[
+                  (val) => !!val || 'El nombre Comercial es obligatorio...',
+                  (val) =>
+                    val.length >= 3 ||
+                    'El Nombre Comercial debe tener minimamente 3 letras',
+                ]"
+              />
             </div>
 
             <div class="col-12">
@@ -155,32 +164,28 @@ watch(
 
 const enviarForm = async () => {
   try {
-    if (nombree.value.nombre.length > 0) {
-      const nom = await api.post("/farmacia/nombre", nombree.value);
-      $q.notify({
-        position: "bottom",
-        timeout: 4500,
-        color: "primary",
-        textColor: "white",
-        actions: [{ icon: "close", color: "white" }],
-        message: "MEDICAMENTO CREADO",
-      });
-      resetForm();
-      alert.value = false;
-      emit("traerDatos");
-    } else {
-      $q.notify({
-        position: "bottom",
-        timeout: 4500,
-        color: "red-5",
-        textColor: "White",
-        actions: [{ icon: "close", color: "white" }],
-        message:
-          "El nombre comercial de MEDICAMENTO y el proveedor es OBLIGATORIO",
-      });
-    }
+    const nom = await api.post("/farmacia/nombre", nombree.value);
+    $q.notify({
+      position: "bottom",
+      timeout: 4500,
+      color: "primary",
+      textColor: "white",
+      actions: [{ icon: "close", color: "white" }],
+      message: `Medicamento ${nombree.value.nombre} Creado`,
+    });
+    resetForm();
+    alert.value = false;
+    emit("traerDatos");
   } catch (error) {
     console.log("error: " + error);
+    $q.notify({
+      position: "bottom",
+      timeout: 4500,
+      color: "red-5",
+      textColor: "White",
+      actions: [{ icon: "close", color: "white" }],
+      message: `ERROR, no se pudo crear el Medicamento ${nombree.value.nombre}`,
+    });
   }
 };
 

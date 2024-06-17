@@ -7,7 +7,6 @@
       :rows="rows"
       :columns="columns"
       row-key="id"
-      :rows-per-page-options="[10, 15, 20, 25]"
       :filter="filter"
       :loading="loading"
     >
@@ -19,11 +18,11 @@
           @click="traerDatos"
         />
 
-        <CrearNombre
+        <CrearMenu
           @traerDatos="traerDatos"
           @cerrar="cerrar"
-          :editarNombre="editarNombre"
-          :nom="nombre"
+          :editarMenu="editarMenu"
+          :men="menu"
         />
 
         <q-space />
@@ -40,21 +39,13 @@
         </q-input>
       </template>
       <template #body-cell-acciones="props">
-        <q-td :props="props" style="width: 60px">
+        <q-td :props="props" style="width: 100px">
           <q-btn
             icon="edit"
             color="primary"
             @click="modificarDatos(props.row)"
-            style="width: 25px"
-            padding="2px"
           />
-          <q-btn
-            icon="delete"
-            color="red"
-            @click="borrarDatos(props.row.id)"
-            style="width: 25px"
-            padding="2px"
-          />
+          <q-btn icon="delete" color="red" @click="borrarDatos(props.row.id)" />
         </q-td>
       </template>
     </q-table>
@@ -65,55 +56,31 @@
 import { ref, onMounted } from "vue";
 import { api } from "boot/axios";
 import { useQuasar } from "quasar";
-
-import CrearNombre from "./CrearNombre.vue";
+import CrearMenu from "src/components/CrearMenu.vue";
 
 const $q = useQuasar();
 const props = defineProps(["refrescarTabla"]);
 const emit = defineEmits(["capturarDatos"]);
 
-const editarNombre = ref(false);
-//const nombre = ref({});
+const editarMenu = ref(false);
+const menu = ref({});
 
 const columns = [
   {
     name: "acciones",
-    label: "Edit/Eli",
+    label: "Botones",
     align: "left",
     field: "acciones",
   },
 
   {
-    name: "nombre",
+    name: "ruta",
     align: "left",
-    label: "Nombre Comercial",
-    field: "nombre",
+    label: "Ruta",
+    field: "ruta",
   },
-  {
-    name: "idPresentacion",
-    label: "Presentación",
-    field: (row) => row.presentacion.nombre,
-    align: "left",
-  },
-  {
-    name: "idCategoria",
-    label: "Categoria",
-    field: (row) => row.categoria.nombre,
-    align: "left",
-  },
-  {
-    name: "nombreQuimico",
-    label: "Nombre Químico",
-    field: "nombreQuimico",
-    align: "left",
-  },
-  {
-    name: "descripcion",
-    label: "Descripción",
-    field: "descripcion",
-    align: "left",
-  },
-  { name: "imagen", label: "Imagen", field: "imagen", align: "left" },
+  { name: "icono", label: "Icono", field: "icono", align: "left" },
+  { name: "orden", label: "Orden", field: "orden", align: "left" },
   { name: "estado", label: "Estado", field: "estado", align: "left" },
 ];
 
@@ -124,52 +91,45 @@ onMounted(async () => {
 const loading = ref(false);
 const filter = ref("");
 const rows = ref([]);
-const nombre = ref([]);
+
 async function traerDatos() {
-  const nombre = await api.get("/farmacia/nombre");
-  rows.value = nombre.data.datos;
+  const menu = await api.get("/farmacia/menu");
+  rows.value = menu.data.datos;
 }
 
 function modificarDatos(datos) {
-  editarNombre.value = true;
-  nombre.value = datos;
+  editarMenu.value = true;
+  menu.value = datos;
 }
 
 function cerrar() {
-  editarNombre.value = false;
-  nombre.value = {};
+  editarMenu.value = false;
+  menu.value = {};
 }
 
 async function borrarDatos(id) {
   try {
     $q.dialog({
-      title: "Eliminar Nombre",
-      message: "¿Esta seguro de eliminar este Nombre?",
+      title: "Eliminar MENU",
+      message: "¿Esta seguro de eliminar esta MENU?",
       cancel: true,
       persistent: true,
     })
       .onOk(async () => {
-        const nombreMedicamento = rows.value.find((nombre) => id === nombre.id);
-        await api.delete("/farmacia/nombre/" + id);
-        console.log("Borrado de Nombre correctamente");
+        await api.delete("/farmacia/menu/" + id);
+        console.log("Borrado de MENU correctamente");
         $q.notify({
           position: "bottom",
           timeout: 4500,
           textColor: "white",
           actions: [{ icon: "close", color: "white" }],
-          message: `Nombre de medicamento ${nombreMedicamento.nombre} ELIMINADO`,
+          message: "MENU ELIMINADO",
         });
         await traerDatos();
       })
-      .onOk(async () => {
-        // console.log('>>>> second OK catcher')
-      })
-      .onCancel(() => {
-        // console.log('>>>> Cancel')
-      })
-      .onDismiss(() => {
-        // console.log('I am triggered on both OK and Cancel')
-      });
+      .onOk(async () => {})
+      .onCancel(() => {})
+      .onDismiss(() => {});
   } catch (error) {
     console.log(error);
   }

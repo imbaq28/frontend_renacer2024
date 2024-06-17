@@ -1,9 +1,9 @@
 <template>
-  <CrearCompra />
+  <CrearCompra @traerDatos="traerDatosMedicamentos" />
   <q-dialog v-model="alert" persistent>
     <q-card>
       <q-card-section class="q-pt-none">
-        <h4>Datos del nuevo MEDICAMENTO</h4>
+        <h4>NUEVA COMPRA DE MEDICAMENTO</h4>
 
         <q-form @submit="enviarForm" @reset="resetForm">
           <div class="col"></div>
@@ -186,25 +186,41 @@ const modificarMedicamento = async () => {
       `/farmacia/medicamento/${medicamento.value.id}`,
       medicamento.value
     );
+    const nombreMedicamento = nombres.value.find(
+      (nombre) => nombre.id === medicamento.value.idNombre
+    );
     $q.notify({
       position: "bottom",
       timeout: 4500,
       color: "purple",
       textColor: "White",
       actions: [{ icon: "close", color: "white" }],
-      message: `El precio de venta y el precio unitario del medicamento ${medicamento.value.idNombre} han sido MODIFICADOS`,
+      message: `El precio de venta y el precio unitario del medicamento ${nombreMedicamento.nombre} han sido MODIFICADOS`,
     });
     resetForm();
     emit("traerDatos");
     cerrarModal();
   } catch (error) {
     console.log("error: " + error);
+    $q.notify({
+      position: "bottom",
+      timeout: 4500,
+      color: "purple",
+      textColor: "White",
+      actions: [{ icon: "close", color: "white" }],
+      message: `No se pudo MODIFICAR EL MEDICAMENTO ${nombreMedicamento.nombre}, no se modifica el stock`,
+    });
   }
 };
 
 function cerrarModal() {
   alert.value = false;
   emit("cerrar");
+}
+
+function traerDatosMedicamentos() {
+  console.log("SE EJECUTO LA IMPORTACION DE MEDICAMENTOS");
+  emit("traerDatos");
 }
 </script>
 <style scoped type="text/css"></style>

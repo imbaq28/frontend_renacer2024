@@ -6,6 +6,7 @@
       title="Treats"
       :rows="rows"
       :columns="columns"
+      :rows-per-page-options="[10, 15, 20, 25]"
       row-key="id"
       :filter="filter"
       :loading="loading"
@@ -39,13 +40,21 @@
         </q-input>
       </template>
       <template #body-cell-acciones="props">
-        <q-td :props="props" style="width: 100px">
+        <q-td :props="props" style="width: 50px">
           <q-btn
             icon="edit"
             color="primary"
             @click="modificarDatos(props.row)"
+            style="width: 25px"
+            padding="2px"
           />
-          <q-btn icon="delete" color="red" @click="borrarDatos(props.row.id)" />
+          <q-btn
+            icon="delete"
+            color="red"
+            @click="borrarDatos(props.row.id)"
+            style="width: 25px"
+            padding="2px"
+          />
         </q-td>
       </template>
     </q-table>
@@ -68,7 +77,7 @@ const compra = ref({});
 const columns = [
   {
     name: "acciones",
-    label: "Botones",
+    label: "Edit/Eli",
     align: "left",
     field: "acciones",
   },
@@ -107,6 +116,8 @@ const columns = [
 ];
 
 onMounted(async () => {
+  const nom = await api.get("/farmacia/nombre");
+  nombres.value = nom.data.datos;
   await traerDatos();
 });
 
@@ -123,11 +134,11 @@ watch(
 const loading = ref(false);
 const filter = ref("");
 const rows = ref([]);
+const nombres = ref([]);
 
 async function traerDatos() {
   const compra = await api.get("/farmacia/compras");
   rows.value = compra.data.datos;
-  console.log("Esto es una compra", compra);
 }
 
 function modificarDatos(datos) {
@@ -144,19 +155,20 @@ async function borrarDatos(id) {
   try {
     $q.dialog({
       title: "Eliminar Compra",
-      message: "¿Esta seguro de eliminar esta COmpra?",
+      message: "¿Esta seguro de eliminar esta Compra?",
       cancel: true,
       persistent: true,
     })
       .onOk(async () => {
+        const nomComp = rows.value.find((nombre) => nombre.id === id);
+        console.log("AAAAAAAAAAAAAA", nomComp, id);
         await api.delete("/farmacia/compras/" + id);
-        console.log("Borrado de Medicamento correctamente");
         $q.notify({
           position: "bottom",
           timeout: 4500,
           textColor: "white",
           actions: [{ icon: "close", color: "white" }],
-          message: "COMPRA DE MEDICAMENTO ELIMINADA",
+          message: `Compra de medicamento ${nomComp.nombreProducto.nombre} ELIMINADA`,
         });
         await traerDatos();
       })

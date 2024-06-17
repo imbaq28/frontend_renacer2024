@@ -7,7 +7,7 @@
     @click="alert = true"
     style="width: 150px"
   />
-  <q-dialog v-model="alert">
+  <q-dialog v-model="alert" :ref="resetForm()">
     <q-card>
       <q-card-section>
         <div class="text-h6">Formulario de Adicion</div>

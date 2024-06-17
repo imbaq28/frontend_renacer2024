@@ -21,7 +21,21 @@
           <q-item
             clickable
             v-ripple
-            to="/farmacia/clientes"
+            to="/farmacia/usuario"
+            exact
+            active-class="my-menu-link"
+          >
+            <q-item-section avatar>
+              <q-icon name="inbox" />
+            </q-item-section>
+
+            <q-item-section> USUARIOS </q-item-section>
+          </q-item>
+
+          <q-item
+            clickable
+            v-ripple
+            to="/farmacia/cliente"
             exact
             active-class="my-menu-link"
           >
@@ -42,7 +56,7 @@
               <q-icon name="today" />
             </q-item-section>
 
-            <q-item-section> MEDICAMENTOS </q-item-section>
+            <q-item-section> STOCKS Y PRECIOS DE VENTA </q-item-section>
           </q-item>
 
           <q-item
@@ -107,7 +121,7 @@
               <q-icon name="today" />
             </q-item-section>
 
-            <q-item-section> NOMBRE </q-item-section>
+            <q-item-section> MEDICAMENTO </q-item-section>
           </q-item>
 
           <q-item
@@ -121,6 +135,32 @@
             </q-item-section>
 
             <q-item-section> COMPRAS </q-item-section>
+          </q-item>
+
+          <q-item
+            clickable
+            v-ripple
+            to="/farmacia/roles"
+            active-class="my-menu-link"
+          >
+            <q-item-section avatar>
+              <q-icon name="today" />
+            </q-item-section>
+
+            <q-item-section> ROLES </q-item-section>
+          </q-item>
+
+          <q-item
+            clickable
+            v-ripple
+            to="/farmacia/menu"
+            active-class="my-menu-link"
+          >
+            <q-item-section avatar>
+              <q-icon name="today" />
+            </q-item-section>
+
+            <q-item-section> MENUS </q-item-section>
           </q-item>
         </q-list>
       </q-scroll-area>

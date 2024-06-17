@@ -18,9 +18,10 @@
                 v-model="categoria.nombre"
                 label="Nombre del tipo de Categoria:"
                 :rules="[
-                  (val =
-                    (val && val.length > 0) ||
-                    'El nombre de la categoria es obligatorio...'),
+                  (val) => !!val || 'El nombre de Categoria es obligatorio...',
+                  (val) =>
+                    val.length > 3 ||
+                    'La categoria debe tener minimamente 3 letras',
                 ]"
               />
             </div>
@@ -116,31 +117,28 @@ watch(
 
 const enviarForm = async () => {
   try {
-    if (categoria.value.nombre.length > 0) {
-      const cat = await api.post("/farmacia/categoria", categoria.value);
-      $q.notify({
-        position: "bottom",
-        timeout: 4500,
-        color: "primary",
-        textColor: "white",
-        actions: [{ icon: "close", color: "white" }],
-        message: "CATEGORIA CREADA",
-      });
-      resetForm();
-      alert.value = false;
-      emit("traerDatos");
-    } else {
-      $q.notify({
-        position: "bottom",
-        timeout: 4500,
-        color: "red-5",
-        textColor: "White",
-        actions: [{ icon: "close", color: "white" }],
-        message: "El nombre de categoria es OBLIGATORIO",
-      });
-    }
+    await api.post("/farmacia/categoria", categoria.value);
+    $q.notify({
+      position: "bottom",
+      timeout: 4500,
+      color: "primary",
+      textColor: "white",
+      actions: [{ icon: "close", color: "white" }],
+      message: `CATEGORIA ${categoria.value.nombre} CREADA...`,
+    });
+    resetForm();
+    alert.value = false;
+    emit("traerDatos");
   } catch (error) {
     console.log("error: " + error);
+    $q.notify({
+      position: "bottom",
+      timeout: 4500,
+      color: "red-5",
+      textColor: "White",
+      actions: [{ icon: "close", color: "white" }],
+      message: "EROOR, No se pudo guardar la categoria...",
+    });
   }
 };
 
@@ -169,6 +167,14 @@ const modificarCategoria = async () => {
     cerrarModal();
   } catch (error) {
     console.log("error: " + error);
+    $q.notify({
+      position: "bottom",
+      timeout: 4500,
+      color: "red-5",
+      textColor: "White",
+      actions: [{ icon: "close", color: "white" }],
+      message: `EROOR, No se pudo Modificar la categoria ${categoria.value.nombre}`,
+    });
   }
 };
 

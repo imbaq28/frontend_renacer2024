@@ -39,13 +39,21 @@
         </q-input>
       </template>
       <template #body-cell-acciones="props">
-        <q-td :props="props" style="width: 100px">
+        <q-td :props="props" style="width: 50px">
           <q-btn
             icon="edit"
             color="primary"
             @click="modificarDatos(props.row)"
+            style="width: 25px"
+            padding="2px"
           />
-          <q-btn icon="delete" color="red" @click="borrarDatos(props.row.id)" />
+          <q-btn
+            icon="delete"
+            color="red"
+            @click="borrarDatos(props.row.id)"
+            style="width: 25px"
+            padding="2px"
+          />
         </q-td>
       </template>
     </q-table>
@@ -68,7 +76,7 @@ const categoria = ref({});
 const columns = [
   {
     name: "acciones",
-    label: "Botones",
+    label: "Edit/Eli",
     align: "left",
     field: "acciones",
   },
@@ -116,6 +124,7 @@ async function borrarDatos(id) {
       persistent: true,
     })
       .onOk(async () => {
+        const nomCat = rows.value.find((nombre) => id === nombre.id);
         await api.delete("/farmacia/categoria/" + id);
         console.log("Borrado de Categoria correctamente");
         $q.notify({
@@ -123,7 +132,7 @@ async function borrarDatos(id) {
           timeout: 4500,
           textColor: "white",
           actions: [{ icon: "close", color: "white" }],
-          message: "CATEGORIA ELIMINADA",
+          message: `Categoria ${nomCat.nombre} ELIMINADA"`,
         });
         await traerDatos();
       })
@@ -138,6 +147,14 @@ async function borrarDatos(id) {
       });
   } catch (error) {
     console.log(error);
+    $q.notify({
+      position: "bottom",
+      timeout: 4500,
+      color: "red-5",
+      textColor: "White",
+      actions: [{ icon: "close", color: "white" }],
+      message: `EROOR, No se pudo eliminar la Categoria ${nomCat.nombre}`,
+    });
   }
 }
 </script>

@@ -44,12 +44,16 @@ const routes = [
         component: () => import("src/pages/Proveedores.vue"),
       },
       {
-        path: "clientes",
-        component: () => import("src/pages/Clientes.vue"),
+        path: "usuario",
+        component: () => import("src/pages/Usuario.vue"),
       },
       {
-        path: "crearusuario",
-        component: () => import("src/components/CrearUsuario.vue"),
+        path: "cliente",
+        component: () => import("src/pages/Cliente.vue"),
+      },
+      {
+        path: "crearrol",
+        component: () => import("src/components/CrearRol.vue"),
       },
       {
         path: "ventas",
@@ -58,6 +62,14 @@ const routes = [
       {
         path: "compras",
         component: () => import("src/pages/Compra.vue"),
+      },
+      {
+        path: "roles",
+        component: () => import("src/pages/Roles.vue"),
+      },
+      {
+        path: "menu",
+        component: () => import("src/pages/Menu.vue"),
       },
     ],
   },

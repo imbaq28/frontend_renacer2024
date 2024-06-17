@@ -7,7 +7,6 @@
       :rows="rows"
       :columns="columns"
       row-key="id"
-      :rows-per-page-options="[10, 15, 20, 25]"
       :filter="filter"
       :loading="loading"
     >
@@ -19,11 +18,11 @@
           @click="traerDatos"
         />
 
-        <CrearNombre
+        <CrearRol
           @traerDatos="traerDatos"
           @cerrar="cerrar"
-          :editarNombre="editarNombre"
-          :nom="nombre"
+          :editarRol="editarRol"
+          :rol="roles"
         />
 
         <q-space />
@@ -40,21 +39,13 @@
         </q-input>
       </template>
       <template #body-cell-acciones="props">
-        <q-td :props="props" style="width: 60px">
+        <q-td :props="props" style="width: 100px">
           <q-btn
             icon="edit"
             color="primary"
             @click="modificarDatos(props.row)"
-            style="width: 25px"
-            padding="2px"
           />
-          <q-btn
-            icon="delete"
-            color="red"
-            @click="borrarDatos(props.row.id)"
-            style="width: 25px"
-            padding="2px"
-          />
+          <q-btn icon="delete" color="red" @click="borrarDatos(props.row.id)" />
         </q-td>
       </template>
     </q-table>
@@ -66,19 +57,19 @@ import { ref, onMounted } from "vue";
 import { api } from "boot/axios";
 import { useQuasar } from "quasar";
 
-import CrearNombre from "./CrearNombre.vue";
+import CrearRol from "./CrearRol.vue";
 
 const $q = useQuasar();
 const props = defineProps(["refrescarTabla"]);
 const emit = defineEmits(["capturarDatos"]);
 
-const editarNombre = ref(false);
-//const nombre = ref({});
+const editarRol = ref(false);
+const roles = ref({});
 
 const columns = [
   {
     name: "acciones",
-    label: "Edit/Eli",
+    label: "Botones",
     align: "left",
     field: "acciones",
   },
@@ -86,34 +77,17 @@ const columns = [
   {
     name: "nombre",
     align: "left",
-    label: "Nombre Comercial",
-    field: "nombre",
-  },
-  {
-    name: "idPresentacion",
-    label: "Presentación",
-    field: (row) => row.presentacion.nombre,
-    align: "left",
-  },
-  {
-    name: "idCategoria",
     label: "Categoria",
-    field: (row) => row.categoria.nombre,
-    align: "left",
+    field: "nombre",
+    sortable: true,
   },
-  {
-    name: "nombreQuimico",
-    label: "Nombre Químico",
-    field: "nombreQuimico",
-    align: "left",
-  },
+  { name: "idUsuario", label: "ID Usuario", field: "idUsuario", align: "left" },
   {
     name: "descripcion",
-    label: "Descripción",
+    label: "Descripcion",
     field: "descripcion",
     align: "left",
   },
-  { name: "imagen", label: "Imagen", field: "imagen", align: "left" },
   { name: "estado", label: "Estado", field: "estado", align: "left" },
 ];
 
@@ -124,40 +98,39 @@ onMounted(async () => {
 const loading = ref(false);
 const filter = ref("");
 const rows = ref([]);
-const nombre = ref([]);
+
 async function traerDatos() {
-  const nombre = await api.get("/farmacia/nombre");
-  rows.value = nombre.data.datos;
+  const roles = await api.get("/farmacia/roles");
+  rows.value = roles.data.datos;
 }
 
 function modificarDatos(datos) {
-  editarNombre.value = true;
-  nombre.value = datos;
+  editarRol.value = true;
+  roles.value = datos;
 }
 
 function cerrar() {
-  editarNombre.value = false;
-  nombre.value = {};
+  editarRol.value = false;
+  roles.value = {};
 }
 
 async function borrarDatos(id) {
   try {
     $q.dialog({
-      title: "Eliminar Nombre",
-      message: "¿Esta seguro de eliminar este Nombre?",
+      title: "Eliminar Rol",
+      message: "¿Esta seguro de eliminar esta Rol?",
       cancel: true,
       persistent: true,
     })
       .onOk(async () => {
-        const nombreMedicamento = rows.value.find((nombre) => id === nombre.id);
-        await api.delete("/farmacia/nombre/" + id);
-        console.log("Borrado de Nombre correctamente");
+        await api.delete("/farmacia/roles/" + id);
+        console.log("Borrado de Rol correctamente");
         $q.notify({
           position: "bottom",
           timeout: 4500,
           textColor: "white",
           actions: [{ icon: "close", color: "white" }],
-          message: `Nombre de medicamento ${nombreMedicamento.nombre} ELIMINADO`,
+          message: "Rol ELIMINADA",
         });
         await traerDatos();
       })

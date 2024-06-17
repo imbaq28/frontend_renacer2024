@@ -6,7 +6,7 @@
       title="Treats"
       :rows="rows"
       rows-per-page-label="Medicamentos por pagina"
-      :rows-per-page-options="[10, 15, 20, 25]"
+      :rows-per-page-options="[5, 10]"
       :columns="columns"
       row-key="id"
       :filter="filter"
@@ -18,13 +18,6 @@
           :disable="loading"
           label="Traer Datos"
           @click="traerDatos"
-        />
-
-        <CrearMedicamento
-          @traerDatos="traerDatos"
-          @cerrar="cerrar"
-          :editarMedicamento="editarMedicamento"
-          :med="medicamento"
         />
 
         <q-space />
@@ -41,20 +34,13 @@
         </q-input>
       </template>
       <template #body-cell-acciones="props">
-        <q-td :props="props" style="width: 50px">
+        <q-td :props="props">
           <q-btn
-            icon="edit"
-            color="primary"
+            icon="ti-plus"
+            color="orange"
             @click="modificarDatos(props.row)"
             style="width: 25px"
-            padding="2px"
-          />
-          <q-btn
-            icon="delete"
-            color="red"
-            @click="borrarDatos(props.row.id)"
-            style="width: 25px"
-            padding="2px"
+            padding="1px"
           />
         </q-td>
       </template>
@@ -66,8 +52,6 @@
 import { ref, onMounted, watch } from "vue";
 import { api } from "boot/axios";
 import { useQuasar } from "quasar";
-import CrearMedicamento from "src/components/CrearMedicamento.vue";
-import CrearCompra from "./CrearCompra.vue";
 
 const $q = useQuasar();
 const props = defineProps(["refrescarTabla"]);
@@ -79,7 +63,7 @@ const medicamento = ref({});
 const columns = [
   {
     name: "acciones",
-    label: "Edit/Eli",
+    label: "Agregar",
     align: "left",
     field: "acciones",
   },
@@ -89,6 +73,14 @@ const columns = [
     align: "left",
     field: (row) => row.nombreProducto.nombre,
   },
+
+  {
+    name: "nombreQuimico",
+    label: "Nombre Químico",
+    field: "nombreQuimico",
+    field: (row) => row.nombreProducto.nombreQuimico,
+  },
+
   {
     name: "precio_venta",
     label: "Precio de venta",
@@ -124,23 +116,15 @@ const filter = ref("");
 const rows = ref([]);
 
 async function traerDatos() {
-  try {
-    const medicamento = await api.get("/farmacia/medicamento");
-    rows.value = medicamento.data.datos;
-    console.log(medicamento);
-  } catch (error) {
-    console.log(error, "ERROR TRAER DATOS");
-  }
+  const medicamento = await api.get("/farmacia/medicamento");
+  rows.value = medicamento.data.datos;
+  console.log(medicamento);
 }
 
 function modificarDatos(datos) {
-  try {
-    console.log("MODIFICANDO MEDICAMENTO", medicamento.value);
-    editarMedicamento.value = true;
-    medicamento.value = datos;
-  } catch (error) {
-    console.log(error);
-  }
+  console.log("MODIFICANDO MEDICAMENTO", medicamento.value);
+  editarMedicamento.value = true;
+  medicamento.value = datos;
 }
 
 function cerrar() {
@@ -161,15 +145,9 @@ async function borrarDatos(id) {
         console.log("Borrado de Medicamento correctamente");
         await traerDatos();
       })
-      .onOk(async () => {
-        // console.log('>>>> second OK catcher')
-      })
-      .onCancel(() => {
-        // console.log('>>>> Cancel')
-      })
-      .onDismiss(() => {
-        // console.log('I am triggered on both OK and Cancel')
-      });
+      .onOk(async () => {})
+      .onCancel(() => {})
+      .onDismiss(() => {});
   } catch (error) {
     console.log(error);
   }

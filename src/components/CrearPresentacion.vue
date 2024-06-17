@@ -17,6 +17,13 @@
               <q-input
                 v-model="presentacion.nombre"
                 label="Nombre del tipo de Presentacion:"
+                :rules="[
+                  (val) =>
+                    !!val || 'El nombre de Presentación es obligatorio...',
+                  (val) =>
+                    val.length >= 3 ||
+                    'El tipo de presentacion debe tener minimamente 3 letras',
+                ]"
               />
             </div>
 
@@ -109,31 +116,28 @@ watch(
 
 const enviarForm = async () => {
   try {
-    if (presentacion.value.nombre.length > 0) {
-      const pres = await api.post("/farmacia/presentacion", presentacion.value);
-      $q.notify({
-        position: "bottom",
-        timeout: 3500,
-        color: "primary",
-        textColor: "white",
-        actions: [{ icon: "close", color: "white" }],
-        message: "PRESENTACION CREADA",
-      });
-      resetForm();
-      alert.value = false;
-      emit("traerDatos");
-    } else {
-      $q.notify({
-        position: "bottom",
-        timeout: 3500,
-        color: "red-5",
-        textColor: "White",
-        actions: [{ icon: "close", color: "white" }],
-        message: "El nombre de PRESENTACION es OBLIGATORIO",
-      });
-    }
+    const pres = await api.post("/farmacia/presentacion", presentacion.value);
+    $q.notify({
+      position: "bottom",
+      timeout: 3500,
+      color: "primary",
+      textColor: "white",
+      actions: [{ icon: "close", color: "white" }],
+      message: `La Presentacion ${presentacion.value.nombre} a sido CREADA`,
+    });
+    resetForm();
+    alert.value = false;
+    emit("traerDatos");
   } catch (error) {
     console.log("error: " + error);
+    $q.notify({
+      position: "bottom",
+      timeout: 3500,
+      color: "red-5",
+      textColor: "White",
+      actions: [{ icon: "close", color: "white" }],
+      message: `ERROR, No se pudo crear la presentacion ${presentacion.value.nombre}`,
+    });
   }
 };
 
@@ -165,6 +169,14 @@ const modificarPresentacion = async () => {
     cerrarModal();
   } catch (error) {
     console.log("error: " + error);
+    $q.notify({
+      position: "bottom",
+      timeout: 3500,
+      color: "red-5",
+      textColor: "White",
+      actions: [{ icon: "close", color: "white" }],
+      message: `ERROR, No se pudo MODIFICAR la presentacion ${presentacion.value.nombre}`,
+    });
   }
 };
 

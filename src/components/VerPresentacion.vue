@@ -8,6 +8,7 @@
       :columns="columns"
       row-key="id"
       :filter="filter"
+      :rows-per-page-options="[10, 15, 20, 25]"
       :loading="loading"
     >
       <template v-slot:top>
@@ -39,13 +40,21 @@
         </q-input>
       </template>
       <template #body-cell-acciones="props">
-        <q-td :props="props" style="width: 100px">
+        <q-td :props="props" style="width: 60px">
           <q-btn
             icon="edit"
             color="primary"
             @click="modificarDatos(props.row)"
+            style="width: 25px"
+            padding="2px"
           />
-          <q-btn icon="delete" color="red" @click="borrarDatos(props.row.id)" />
+          <q-btn
+            icon="delete"
+            color="red"
+            @click="borrarDatos(props.row.id)"
+            style="width: 25px"
+            padding="2px"
+          />
         </q-td>
       </template>
     </q-table>
@@ -68,7 +77,7 @@ const presentacion = ref({});
 const columns = [
   {
     name: "acciones",
-    label: "Botones",
+    label: "Edit/Eli",
     align: "left",
     field: "acciones",
   },
@@ -124,6 +133,7 @@ async function borrarDatos(id) {
       persistent: true,
     })
       .onOk(async () => {
+        const eleEli = rows.value.find((nombre) => id === nombre.id);
         await api.delete("/farmacia/presentacion/" + id);
         console.log("Borrado de Presentacion correctamente");
         $q.notify({
@@ -131,7 +141,7 @@ async function borrarDatos(id) {
           timeout: 4500,
           textColor: "white",
           actions: [{ icon: "close", color: "white" }],
-          message: "PRESENTACION ELIMINADA",
+          message: `Presentacion ${eleEli.nombre} Eliminada`,
         });
         await traerDatos();
       })

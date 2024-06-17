@@ -1,6 +1,6 @@
 <template>
   <q-btn
-    label="NUEVO COMPRA"
+    label="NUEVA COMPRA"
     color="primary"
     @click="alert = true"
     style="width: 150px"
@@ -29,6 +29,12 @@
               option-value="id"
               option-label="nombre"
               style="width: 250px; padding-bottom: 32px"
+              :rules="[
+                (val) => !!val || 'El nombre del Medicamento es obligatorio...',
+                (val) =>
+                  val.length > 3 ||
+                  'El medicamento debe tener minimamente 3 letras...',
+              ]"
             >
               <template v-slot:no-option>
                 <q-item>
@@ -39,12 +45,59 @@
               </template>
             </q-select>
 
-            <div class="col-12" style="width: 200px">
+            <div class="col-12" style="width: 100px">
               <q-input
                 v-model="compra.cantidad"
                 label="Cantidad"
                 :readonly="editarCompra"
               />
+            </div>
+
+            <div class="col-12" style="width: 100px">
+              <q-select
+                label="Estado"
+                v-model="compra.estado"
+                :options="opciones"
+              />
+            </div>
+
+            <div class="col-12" style="width: 125px">
+              <q-input v-model="compra.lote" label="Lote" />
+            </div>
+            <div class="col-12" style="width: 75px">
+              <q-input v-model="compra.precioCompra" label="Precio de Compra" />
+            </div>
+
+            <div class="q-pa-md">
+              <q-input
+                filled
+                v-model="compra.fechaVencimiento"
+                label="Fecha de Vencimiento"
+              >
+                <template v-slot:append>
+                  <q-icon name="event" class="cursor-pointer">
+                    <q-popup-proxy
+                      cover
+                      transition-show="scale"
+                      transition-hide="scale"
+                    >
+                      <q-date
+                        v-model="compra.fechaVencimiento"
+                        mask="DD-MM-YYYY"
+                      >
+                        <div class="row items-center justify-end">
+                          <q-btn
+                            v-close-popup
+                            label="Close"
+                            color="primary"
+                            flat
+                          />
+                        </div>
+                      </q-date>
+                    </q-popup-proxy>
+                  </q-icon>
+                </template>
+              </q-input>
             </div>
 
             <div class="col-12">
@@ -57,62 +110,19 @@
             </div>
 
             <div class="col-12">
-              <div class="q-pa-md">
-                <q-input
-                  filled
-                  v-model="compra.fechaVencimiento"
-                  label="Fecha de Vencimiento"
-                >
-                  <template v-slot:append>
-                    <q-icon name="event" class="cursor-pointer">
-                      <q-popup-proxy
-                        cover
-                        transition-show="scale"
-                        transition-hide="scale"
-                      >
-                        <q-date
-                          v-model="compra.fechaVencimiento"
-                          mask="DD-MM-YYYY"
-                        >
-                          <div class="row items-center justify-end">
-                            <q-btn
-                              v-close-popup
-                              label="Close"
-                              color="primary"
-                              flat
-                            />
-                          </div>
-                        </q-date>
-                      </q-popup-proxy>
-                    </q-icon>
-                  </template>
-                </q-input>
-              </div>
-            </div>
-
-            <div class="col-12" style="width: 200px">
-              <q-input v-model="compra.lote" label="Lote" />
-            </div>
-            <div class="col-12" style="width: 200px">
-              <q-input v-model="compra.precioCompra" label="Precio de Compra" />
-            </div>
-
-            <div class="col-12">
               <q-select
+                filled
+                use-input
+                hide-selected
+                fill-input
+                input-debounce="0"
                 label="Proveedor"
                 v-model="compra.idProveedor"
-                :options="proveedores"
+                :options="option2"
                 emit-value
                 map-options
                 option-value="id"
                 option-label="nombre"
-              />
-            </div>
-            <div class="col-12" style="width: 200px">
-              <q-select
-                label="Estado"
-                v-model="compra.estado"
-                :options="opciones"
               />
             </div>
 
@@ -153,7 +163,6 @@
 <script setup>
 import { ref, watch, onMounted } from "vue";
 import { api } from "boot/axios";
-//import VerMedicamento from "./VerMedicamento.vue";
 import { useQuasar } from "quasar";
 
 const $q = useQuasar();
@@ -181,22 +190,16 @@ const alert = ref(false);
 const proveedores = ref([]);
 const nombres = ref([]);
 const option = ref([]);
+const option2 = ref([]);
 
 onMounted(async () => {
-  /* const cat = await api.get("/farmacia/categoria");
-  console.log("se ejecuto", cat.data.datos);
-  categorias.value = cat.data.datos;
-
-  const pres = await api.get("/farmacia/presentacion");
-  console.log("se ejecuto", pres.data.datos);
-  presentaciones.value = pres.data.datos;
-*/
   const prov = await api.get("/farmacia/proveedores");
-  console.log("se ejecuto", prov.data.datos);
+  //console.log("se ejecuto", prov.data.datos);
   proveedores.value = prov.data.datos;
+  option2.value = prov.data.datos;
 
   const noms = await api.get("/farmacia/nombre");
-  console.log("se ejecuto", noms.data.datos);
+  //console.log("se ejecuto", noms.data.datos);
   nombres.value = noms.data.datos;
   option.value = noms.data.datos;
 });
@@ -231,32 +234,33 @@ function filterFn(val, update, abort) {
 
 const enviarForm = async () => {
   try {
-    console.log("COMPRAS TEST", compra.value);
-    if (compra.value.idNombre.length > 0) {
-      const comp = await api.post("/farmacia/compras", compra.value);
-      $q.notify({
-        position: "bottom",
-        timeout: 3500,
-        color: "primary",
-        textColor: "white",
-        actions: [{ icon: "close", color: "white" }],
-        message: "COMPRA CREADA",
-      });
-      resetForm();
-      alert.value = false;
-      emit("traerDatos");
-    } else {
-      $q.notify({
-        position: "bottom",
-        timeout: 3500,
-        color: "red-5",
-        textColor: "White",
-        actions: [{ icon: "close", color: "white" }],
-        message: "Falta el medicamento a Comprar",
-      });
-    }
+    await api.post("/farmacia/compras", compra.value);
+    const nombreMedicamento = nombres.value.find(
+      (nombre) => nombre.id === compra.value.idNombre
+    );
+    $q.notify({
+      position: "bottom",
+      timeout: 3500,
+      color: "primary",
+      textColor: "white",
+      actions: [{ icon: "close", color: "white" }],
+      message: `Compra del medicamento ${nombreMedicamento.nombre} ACTUALIZADO`,
+    });
+    resetForm();
+    alert.value = false;
+    emit("traerDatos");
   } catch (error) {
     console.log("error: " + error);
+    resetForm();
+    $q.notify({
+      position: "bottom",
+      timeout: 3500,
+      color: "red-5",
+      textColor: "White",
+      actions: [{ icon: "close", color: "white" }],
+      message: "No se pudo crear el medicamento...",
+    });
+    cerrarModal();
   }
 };
 
@@ -276,15 +280,17 @@ const resetForm = () => {
 
 const modificarCompra = async () => {
   try {
-    console.log("MODIFICAR COMPRA", compra.value);
     await api.put(`/farmacia/compras/${compra.value.id}`, compra.value);
+    const nombreMedicamento = nombres.value.find(
+      (nombre) => nombre.id === compra.value.idNombre
+    );
     $q.notify({
       position: "bottom",
       timeout: 3500,
       color: "purple",
       textColor: "White",
       actions: [{ icon: "close", color: "white" }],
-      message: "COMPRA MODIFICADA",
+      message: `COMPRA ${nombreMedicamento.nombre} MODIFICADA`,
     });
     resetForm();
     emit("traerDatos");

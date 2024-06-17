@@ -7,7 +7,6 @@
       :rows="rows"
       :columns="columns"
       row-key="id"
-      :rows-per-page-options="[10, 15, 20, 25]"
       :filter="filter"
       :loading="loading"
     >
@@ -19,11 +18,11 @@
           @click="traerDatos"
         />
 
-        <CrearNombre
+        <CrearUsuario
           @traerDatos="traerDatos"
           @cerrar="cerrar"
-          :editarNombre="editarNombre"
-          :nom="nombre"
+          :editarUsuario="editarUsuario"
+          :usu="usuario"
         />
 
         <q-space />
@@ -40,21 +39,13 @@
         </q-input>
       </template>
       <template #body-cell-acciones="props">
-        <q-td :props="props" style="width: 60px">
+        <q-td :props="props" style="width: 100px">
           <q-btn
             icon="edit"
             color="primary"
             @click="modificarDatos(props.row)"
-            style="width: 25px"
-            padding="2px"
           />
-          <q-btn
-            icon="delete"
-            color="red"
-            @click="borrarDatos(props.row.id)"
-            style="width: 25px"
-            padding="2px"
-          />
+          <q-btn icon="delete" color="red" @click="borrarDatos(props.row.id)" />
         </q-td>
       </template>
     </q-table>
@@ -65,56 +56,106 @@
 import { ref, onMounted } from "vue";
 import { api } from "boot/axios";
 import { useQuasar } from "quasar";
-
-import CrearNombre from "./CrearNombre.vue";
+import CrearUsuario from "src/components/CrearUsuario";
 
 const $q = useQuasar();
 const props = defineProps(["refrescarTabla"]);
 const emit = defineEmits(["capturarDatos"]);
 
-const editarNombre = ref(false);
-//const nombre = ref({});
+const editarUsuario = ref(false);
+const usuario = ref({});
 
 const columns = [
   {
     name: "acciones",
-    label: "Edit/Eli",
+    label: "Botones",
     align: "left",
     field: "acciones",
   },
 
   {
-    name: "nombre",
+    name: "tipoDocumento",
     align: "left",
-    label: "Nombre Comercial",
-    field: "nombre",
+    label: "Tipo de Documento",
+    field: "tipoDocumento",
   },
   {
-    name: "idPresentacion",
-    label: "Presentación",
-    field: (row) => row.presentacion.nombre,
-    align: "left",
-  },
-  {
-    name: "idCategoria",
-    label: "Categoria",
-    field: (row) => row.categoria.nombre,
+    name: "numeroDocumento",
+    label: "Numero de Documento",
+    field: "numeroDocumento",
     align: "left",
   },
   {
-    name: "nombreQuimico",
-    label: "Nombre Químico",
-    field: "nombreQuimico",
+    name: "complemento",
+    label: "Complemento",
+    field: "complemento",
     align: "left",
   },
   {
-    name: "descripcion",
-    label: "Descripción",
-    field: "descripcion",
+    name: "fechaNacimiento",
+    label: "Fecha de Nacimiento",
+    field: "fechaNacimiento",
     align: "left",
   },
-  { name: "imagen", label: "Imagen", field: "imagen", align: "left" },
-  { name: "estado", label: "Estado", field: "estado", align: "left" },
+  {
+    name: "usuario",
+    label: "Nombre de Usuario",
+    field: "usuario",
+    align: "left",
+  },
+  {
+    name: "contraseña",
+    label: "Contraseña",
+    field: "contrasena",
+    align: "left",
+  },
+  {
+    name: "nombres",
+    label: "Nombres",
+    field: "nombres",
+    align: "left",
+  },
+  {
+    name: "primerApellido",
+    label: "Apellido Paterno",
+    field: "primerApellido",
+    align: "left",
+  },
+
+  {
+    name: "segundoApellido",
+    label: "Apellido Materno",
+    field: "segundoApellido",
+    align: "left",
+  },
+
+  {
+    name: "telefono",
+    label: "Telefono",
+    field: "telefono",
+    align: "left",
+  },
+
+  {
+    name: "celular",
+    label: "Numero de Celular",
+    field: "celular",
+    align: "left",
+  },
+
+  {
+    name: "correoElectronico",
+    label: "Correo Electronico",
+    field: "correoElectronico",
+    align: "left",
+  },
+
+  {
+    name: "estado",
+    label: "Estado",
+    field: "estado",
+    align: "left",
+  },
 ];
 
 onMounted(async () => {
@@ -124,40 +165,39 @@ onMounted(async () => {
 const loading = ref(false);
 const filter = ref("");
 const rows = ref([]);
-const nombre = ref([]);
+
 async function traerDatos() {
-  const nombre = await api.get("/farmacia/nombre");
-  rows.value = nombre.data.datos;
+  const usuario = await api.get("/farmacia/usuario");
+  rows.value = usuario.data.datos;
 }
 
 function modificarDatos(datos) {
-  editarNombre.value = true;
-  nombre.value = datos;
+  editarUsuario.value = true;
+  usuario.value = datos;
 }
 
 function cerrar() {
-  editarNombre.value = false;
-  nombre.value = {};
+  editarUsuario.value = false;
+  usuario.value = {};
 }
 
 async function borrarDatos(id) {
   try {
     $q.dialog({
-      title: "Eliminar Nombre",
-      message: "¿Esta seguro de eliminar este Nombre?",
+      title: "Eliminar Usuario",
+      message: "¿Esta seguro de eliminar este USUARIO?",
       cancel: true,
       persistent: true,
     })
       .onOk(async () => {
-        const nombreMedicamento = rows.value.find((nombre) => id === nombre.id);
-        await api.delete("/farmacia/nombre/" + id);
-        console.log("Borrado de Nombre correctamente");
+        const borrado = await api.delete("/farmacia/usuario/" + id);
+        console.log("Borrado de USUARIO correctamente");
         $q.notify({
           position: "bottom",
           timeout: 4500,
           textColor: "white",
           actions: [{ icon: "close", color: "white" }],
-          message: `Nombre de medicamento ${nombreMedicamento.nombre} ELIMINADO`,
+          message: `USUARIO ${borrado.value.nombre}ELIMINADA`,
         });
         await traerDatos();
       })
