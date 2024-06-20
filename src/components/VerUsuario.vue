@@ -56,7 +56,7 @@
 import { ref, onMounted } from "vue";
 import { api } from "boot/axios";
 import { useQuasar } from "quasar";
-import CrearUsuario from "src/components/CrearUsuario";
+import CrearUsuario from "src/components/CrearUsuario.vue";
 
 const $q = useQuasar();
 const props = defineProps(["refrescarTabla"]);
@@ -74,13 +74,13 @@ const columns = [
   },
 
   {
-    name: "tipoDocumento",
+    name: "tipo_documento",
     align: "left",
     label: "Tipo de Documento",
     field: "tipoDocumento",
   },
   {
-    name: "numeroDocumento",
+    name: "numero_documento",
     label: "Numero de Documento",
     field: "numeroDocumento",
     align: "left",
@@ -92,7 +92,7 @@ const columns = [
     align: "left",
   },
   {
-    name: "fechaNacimiento",
+    name: "fecha_nacimiento",
     label: "Fecha de Nacimiento",
     field: "fechaNacimiento",
     align: "left",
@@ -104,7 +104,7 @@ const columns = [
     align: "left",
   },
   {
-    name: "contraseña",
+    name: "contrasena",
     label: "Contraseña",
     field: "contrasena",
     align: "left",
@@ -116,14 +116,14 @@ const columns = [
     align: "left",
   },
   {
-    name: "primerApellido",
+    name: "primer_apellido",
     label: "Apellido Paterno",
     field: "primerApellido",
     align: "left",
   },
 
   {
-    name: "segundoApellido",
+    name: "segundo_apellido",
     label: "Apellido Materno",
     field: "segundoApellido",
     align: "left",
@@ -144,7 +144,7 @@ const columns = [
   },
 
   {
-    name: "correoElectronico",
+    name: "correo_electronico",
     label: "Correo Electronico",
     field: "correoElectronico",
     align: "left",
@@ -167,7 +167,7 @@ const filter = ref("");
 const rows = ref([]);
 
 async function traerDatos() {
-  const usuario = await api.get("/farmacia/usuario");
+  const usuario = await api.get("/system/usuario");
   rows.value = usuario.data.datos;
 }
 
@@ -190,7 +190,7 @@ async function borrarDatos(id) {
       persistent: true,
     })
       .onOk(async () => {
-        const borrado = await api.delete("/farmacia/usuario/" + id);
+        const borrado = await api.delete("/system/usuario/" + id);
         console.log("Borrado de USUARIO correctamente");
         $q.notify({
           position: "bottom",

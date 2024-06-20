@@ -7,7 +7,7 @@
   />
   <q-dialog v-model="alert" persistent>
     <q-card>
-      <q-card-section class="q-pt-none" :ref="resetForm()">
+      <q-card-section class="q-pt-none">
         <h4>Datos del nuevo ROL</h4>
 
         <q-form @submit="enviarForm" @reset="resetForm">
@@ -17,39 +17,13 @@
               <q-input
                 v-model="roles.nombre"
                 label="Nombre del tipo de ROL:"
+                style="width: 250px"
                 :rules="[
                   (val =
                     (val && val.length > 0) ||
                     'El nombre de la ROL es obligatorio...'),
                 ]"
               />
-            </div>
-
-            <div class="col-12">
-              <q-select
-                filled
-                v-model="roles.idUsuario"
-                use-input
-                hide-selected
-                fill-input
-                input-debounce="0"
-                :options="option"
-                @filter="filterFn"
-                hint="Usuario"
-                emit-value
-                map-options
-                option-value="id"
-                option-label="nombre"
-                style="width: 250px; padding-bottom: 32px"
-              >
-                <template v-slot:no-option>
-                  <q-item>
-                    <q-item-section class="text-grey">
-                      Medicamento inexistente
-                    </q-item-section>
-                  </q-item>
-                </template>
-              </q-select>
             </div>
 
             <div class="col-12">
@@ -106,7 +80,7 @@
 </template>
 
 <script setup>
-import { ref, watch } from "vue";
+import { ref, watch, onMounted } from "vue";
 import { api } from "boot/axios";
 import { useQuasar } from "quasar";
 
@@ -119,14 +93,13 @@ const $q = useQuasar();
 const option = ref([]);
 
 onMounted(async () => {
-  const rols = await api.get("/farmacia/usuario");
-  console.log("se obtubo datos del usuario", rols.data.datos);
+  const rols = await api.get("/system/roles");
+  console.log("se obtubo datos del rol", rols.data.datos);
   option.value = rols.data.datos;
 });
 
 const roles = ref({
   nombre: "",
-  idUsuario: "",
   descripcion: "",
   estado: "ACTIVO",
   id: "",
@@ -141,7 +114,6 @@ watch(
       alert.value = true;
       roles.value = {
         nombre: props.rol.nombre,
-        idUsuario: props.rol.idUsuario,
         descripcion: props.rol.descripcion,
         estado: props.rol.estado,
         id: props.rol.id,
@@ -152,38 +124,34 @@ watch(
 
 const enviarForm = async () => {
   try {
-    if (roles.value.nombre.length > 0) {
-      const rol = await api.post("/farmacia/roles", roles.value);
-      $q.notify({
-        position: "bottom",
-        timeout: 4500,
-        color: "primary",
-        textColor: "white",
-        actions: [{ icon: "close", color: "white" }],
-        message: "ROL CREADO",
-      });
-      resetForm();
-      alert.value = false;
-      emit("traerDatos");
-    } else {
-      $q.notify({
-        position: "bottom",
-        timeout: 4500,
-        color: "red-5",
-        textColor: "White",
-        actions: [{ icon: "close", color: "white" }],
-        message: "El nombre del ROL es OBLIGATORIO",
-      });
-    }
+    const rol = await api.post("/system/roles", roles.value);
+    $q.notify({
+      position: "bottom",
+      timeout: 4500,
+      color: "primary",
+      textColor: "white",
+      actions: [{ icon: "close", color: "white" }],
+      message: `ROL ${roles.value.nombre} CREADO`,
+    });
+    resetForm();
+    alert.value = false;
+    emit("traerDatos");
   } catch (error) {
     console.log("error: " + error);
+    $q.notify({
+      position: "bottom",
+      timeout: 4500,
+      color: "red-5",
+      textColor: "White",
+      actions: [{ icon: "close", color: "white" }],
+      message: "No se pudo crear el ROL",
+    });
   }
 };
 
 const resetForm = () => {
-  categoria.value = {
+  roles.value = {
     nombre: "",
-    idUsuario: "",
     descripcion: "",
     estado: "ACTIVO",
     id: "",
@@ -192,7 +160,7 @@ const resetForm = () => {
 
 const modificarRol = async () => {
   try {
-    await api.put(`/farmacia/roles/${roles.value.id}`, roles.value);
+    await api.put(`/system/roles/${roles.value.id}`, roles.value);
     $q.notify({
       position: "bottom",
       timeout: 4500,
@@ -206,6 +174,14 @@ const modificarRol = async () => {
     cerrarModal();
   } catch (error) {
     console.log("error: " + error);
+    $q.notify({
+      position: "bottom",
+      timeout: 4500,
+      color: "red-5",
+      textColor: "White",
+      actions: [{ icon: "close", color: "white" }],
+      message: `No se pudo modificar el rol ${roles.value.nombre}`,
+    });
   }
 };
 

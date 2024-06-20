@@ -60,6 +60,10 @@ const routes = [
         component: () => import("src/pages/Ventas.vue"),
       },
       {
+        path: "ventas2",
+        component: () => import("src/pages/Ventas2.vue"),
+      },
+      {
         path: "compras",
         component: () => import("src/pages/Compra.vue"),
       },

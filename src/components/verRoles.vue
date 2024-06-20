@@ -9,6 +9,7 @@
       row-key="id"
       :filter="filter"
       :loading="loading"
+      :rows-per-page-options="[10, 15, 20, 25]"
     >
       <template v-slot:top>
         <q-btn
@@ -77,11 +78,11 @@ const columns = [
   {
     name: "nombre",
     align: "left",
-    label: "Categoria",
+    label: "Rol",
     field: "nombre",
     sortable: true,
   },
-  { name: "idUsuario", label: "ID Usuario", field: "idUsuario", align: "left" },
+
   {
     name: "descripcion",
     label: "Descripcion",
@@ -100,7 +101,7 @@ const filter = ref("");
 const rows = ref([]);
 
 async function traerDatos() {
-  const roles = await api.get("/farmacia/roles");
+  const roles = await api.get("/system/roles");
   rows.value = roles.data.datos;
 }
 
@@ -123,19 +124,17 @@ async function borrarDatos(id) {
       persistent: true,
     })
       .onOk(async () => {
-        await api.delete("/farmacia/roles/" + id);
+        const eli = rows.value.find((nombre) => nombre.id === id);
+        await api.delete("/system/roles/" + id);
         console.log("Borrado de Rol correctamente");
         $q.notify({
           position: "bottom",
           timeout: 4500,
           textColor: "white",
           actions: [{ icon: "close", color: "white" }],
-          message: "Rol ELIMINADA",
+          message: `Rol ${eli.nombre} ELIMINADO `,
         });
         await traerDatos();
-      })
-      .onOk(async () => {
-        // console.log('>>>> second OK catcher')
       })
       .onCancel(() => {
         // console.log('>>>> Cancel')
@@ -145,6 +144,13 @@ async function borrarDatos(id) {
       });
   } catch (error) {
     console.log(error);
+    $q.notify({
+      position: "bottom",
+      timeout: 4500,
+      textColor: "white",
+      actions: [{ icon: "close", color: "white" }],
+      message: `No se pudo eliminar el Rol ${eli.nombre}`,
+    });
   }
 }
 </script>

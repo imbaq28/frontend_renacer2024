@@ -143,6 +143,7 @@ const enviarForm = async () => {
       actions: [{ icon: "close", color: "white" }],
       message: `El Proveedor ${proveedor.value.nombre} no pudo ser creado`,
     });
+    resetForm();
   }
 };
 
@@ -190,6 +191,7 @@ const modificarProveedor = async () => {
 function cerrarModal() {
   alert.value = false;
   emit("cerrar");
+  resetForm();
 }
 </script>
 

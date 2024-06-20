@@ -163,6 +163,19 @@
             <q-item-section> MENUS </q-item-section>
           </q-item>
         </q-list>
+
+        <q-item
+          clickable
+          v-ripple
+          to="/farmacia/ventas2"
+          active-class="my-menu-link"
+        >
+          <q-item-section avatar>
+            <q-icon name="today" />
+          </q-item-section>
+
+          <q-item-section> VENTAS2 </q-item-section>
+        </q-item>
       </q-scroll-area>
 
       <q-img

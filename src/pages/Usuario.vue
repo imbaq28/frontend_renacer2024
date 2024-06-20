@@ -1,13 +1,10 @@
 <template>
   <q-page padding>
     <h4>USUARIOS</h4>
-
-    <div>
-      <VerUsuario
-        :refrescarTabla="refrescarTabla"
-        @capturarDatos="capturarDatos"
-      />
-    </div>
+    <VerUsuario
+      :refrescarTabla="refrescarTabla"
+      @capturarDatos="capturarDatos"
+    />
   </q-page>
 </template>
 

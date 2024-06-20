@@ -5,17 +5,13 @@
     @click="alert = true"
     style="width: 150px"
   />
-  <q-dialog v-model="alert">
+  <q-dialog v-model="alert" persistent>
     <q-card>
-      <q-card-section>
-        <div class="text-h6">Formulario de Adicion de USUARIO</div>
-      </q-card-section>
-
-      <q-card-section class="q-pt-none" :ref="resetForm()">
-        <h4>USUARIO</h4>
+      <q-card-section class="q-pt-none">
+        <div class="text-h4">Formulario de Adicion de USUARIO</div>
 
         <q-form @submit="enviarForm" @reset="resetForm">
-          <div class="row q-col-gutter-md" style="width: 500px">
+          <div class="row q-col-gutter-md" style="width: 300px">
             <div class="col-12">
               <q-input v-model="usuario.nombres" label="Nombres" />
             </div>
@@ -39,11 +35,36 @@
               <q-input v-model="usuario.contrasena" label="Contraseña" />
             </div>
 
-            <div class="col-12">
+            <div class="q-pa-md">
               <q-input
+                filled
                 v-model="usuario.fechaNacimiento"
-                label="Fecha de nacimiento"
-              />
+                label="Fecha de Nacimiento"
+              >
+                <template v-slot:append>
+                  <q-icon name="event" class="cursor-pointer">
+                    <q-popup-proxy
+                      cover
+                      transition-show="scale"
+                      transition-hide="scale"
+                    >
+                      <q-date
+                        v-model="usuario.fechaNacimiento"
+                        mask="DD-MM-YYYY"
+                      >
+                        <div class="row items-center justify-end">
+                          <q-btn
+                            v-close-popup
+                            label="Close"
+                            color="primary"
+                            flat
+                          />
+                        </div>
+                      </q-date>
+                    </q-popup-proxy>
+                  </q-icon>
+                </template>
+              </q-input>
             </div>
 
             <div class="col-12">
@@ -74,9 +95,15 @@
 
             <div class="col-12">
               <q-input
+                filled
                 v-model="usuario.correoElectronico"
-                label="Correo Electrónico"
-              />
+                type="email"
+                suffix="@gmail.com"
+              >
+                <template v-slot:before>
+                  <q-icon name="mail" />
+                </template>
+              </q-input>
             </div>
 
             <div class="col-12" style="width: 200px">
@@ -117,7 +144,7 @@
       </q-card-section>
 
       <q-card-actions align="right">
-        <q-btn flat label="OK" color="primary" v-close-popup />
+        <q-btn flat label="OK" color="primary" @click="cerrarModal" />
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -132,8 +159,8 @@ const props = defineProps(["editarUsuario", "usu"]);
 const emit = defineEmits(["traerDatos", "cerrar"]);
 
 const $q = useQuasar();
-
-const tipos = ["Usuario", "Cliente", "no se sabe"];
+const date = ref("2025/02/01");
+//const tipos = ["Usuario", "Cliente", "no se sabe"];
 const opciones = ["ACTIVO", "INACTIVO"];
 const alert = ref(false);
 
@@ -141,7 +168,7 @@ const usuario = ref({
   id: "",
   tipoDocumento: "",
   complemento: "",
-  fechaNacimiento: "",
+  fechaNacimiento: "1980/01/01",
   nombres: "",
   primerApellido: "",
   segundoApellido: "",
@@ -152,7 +179,6 @@ const usuario = ref({
   correoElectronico: "",
   numeroDocumento: 0,
   estado: "ACTIVO",
-  idRol: "",
 });
 
 watch(
@@ -175,38 +201,36 @@ watch(
         correoElectronico: props.usu.correoElectronico,
         numeroDocumento: props.usu.numeroDocumento,
         estado: props.usu.estado,
-        idRol: props.usu.idRol,
       };
     }
   }
 );
 const enviarForm = async () => {
   try {
-    if (usuario.value.nombres.length > 0) {
-      const usu = await api.post("/farmacia/usuario", usuario.value);
-      $q.notify({
-        position: "bottom",
-        timeout: 4500,
-        color: "primary",
-        textColor: "white",
-        actions: [{ icon: "close", color: "white" }],
-        message: "USUARIO CREADO",
-      });
-      resetForm();
-      alert.value = false;
-      emit("traerDatos");
-    } else {
-      $q.notify({
-        position: "bottom",
-        timeout: 4500,
-        color: "red-5",
-        textColor: "White",
-        actions: [{ icon: "close", color: "white" }],
-        message: "El nombre de USUARIO es OBLIGATORIO",
-      });
-    }
+    console.log("USUARIOS", usuario.value);
+    await api.post("/system/usuario", usuario.value);
+    $q.notify({
+      position: "bottom",
+      timeout: 4500,
+      color: "primary",
+      textColor: "white",
+      actions: [{ icon: "close", color: "white" }],
+      message: "USUARIO CREADO",
+    });
+    resetForm();
+    alert.value = false;
+    emit("traerDatos");
   } catch (error) {
     console.log("error: " + error);
+    $q.notify({
+      position: "bottom",
+      timeout: 4500,
+      color: "red-5",
+      textColor: "White",
+      actions: [{ icon: "close", color: "white" }],
+      message: "No se pudo guardar Usuario",
+    });
+    resetForm();
   }
 };
 
@@ -226,13 +250,13 @@ const resetForm = () => {
     correoElectronico: "",
     numeroDocumento: 0,
     estado: "ACTIVO",
-    idRol: "",
   };
 };
 
 const modificarUsuario = async () => {
   try {
-    await api.put(`/farmacia/usuario/${usuario.value.id}`, usuario.value);
+    console.log("MODIFI MAL", usuario.value);
+    await api.put(`/system/usuario/${usuario.value.id}`, usuario.value);
     $q.notify({
       position: "bottom",
       timeout: 4500,
@@ -246,12 +270,21 @@ const modificarUsuario = async () => {
     cerrarModal();
   } catch (error) {
     console.log("error: " + error);
+    $q.notify({
+      position: "bottom",
+      timeout: 4500,
+      color: "red-5",
+      textColor: "White",
+      actions: [{ icon: "close", color: "white" }],
+      message: "No se pudo MODIFICAR Usuario",
+    });
   }
 };
 
 function cerrarModal() {
   alert.value = false;
   emit("cerrar");
+  resetForm();
 }
 </script>
 
