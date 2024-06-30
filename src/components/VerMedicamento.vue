@@ -46,19 +46,18 @@
             icon="edit"
             color="primary"
             @click="modificarDatos(props.row)"
-            style="width: 25px"
-            padding="2px"
+            padding="4px"
           />
           <q-btn
             icon="delete"
             color="red"
             @click="borrarDatos(props.row.id)"
-            style="width: 25px"
-            padding="2px"
+            padding="4px"
           />
         </q-td>
       </template>
     </q-table>
+    <q-btn color="primary" label="DOWNLOAD PDF" @click="donwloadPDF()" />
   </div>
 </template>
 
@@ -67,14 +66,17 @@ import { ref, onMounted, watch } from "vue";
 import { api } from "boot/axios";
 import { useQuasar } from "quasar";
 import CrearMedicamento from "src/components/CrearMedicamento.vue";
-import CrearCompra from "./CrearCompra.vue";
+//import CrearCompra from "./CrearCompra.vue";
+import jsPDF from "jspdf";
 
 const $q = useQuasar();
 const props = defineProps(["refrescarTabla"]);
 const emit = defineEmits(["capturarDatos"]);
-
 const editarMedicamento = ref(false);
 const medicamento = ref({});
+const loading = ref(false);
+const filter = ref("");
+const rows = ref([]);
 
 const columns = [
   {
@@ -101,9 +103,49 @@ const columns = [
     field: "precioUnitario",
   },
 
-  { name: "stock", label: "Stock", field: "stock" },
+  { name: "stock", label: "Stock", field: "stock", sortable: true },
+  { name: "cantidad_minima", label: "Stock Minimo", field: "cantidadMinima" },
   { name: "estado", label: "Estado", field: "estado" },
 ];
+
+function createHeaders(keys) {
+  var result = [];
+  for (var i = 0; i < keys.length; i += 1) {
+    result.push({
+      id: keys[i],
+      name: keys[i],
+      prompt: keys[i],
+      width: 65,
+      align: "center",
+      padding: 0,
+    });
+  }
+  return result;
+}
+
+function donwloadPDF() {
+  var headers = createHeaders([
+    "nombreComercial",
+    "precioVenta",
+    "precioUnitario",
+    "stock",
+    "estado",
+  ]);
+  console.log(rows.value, "TEST");
+  const body = rows.value.map((row) => {
+    return {
+      nombreComercial: row.nombreProducto.nombre,
+      precioVenta: String(row.precioVenta),
+      precioUnitario: String(row.precioUnitario),
+      stock: String(row.stock),
+      estado: row.estado,
+    };
+  });
+  console.log("BODY", body);
+  const pdf = new jsPDF({ putOnlyUsedFonts: true, orientation: "landscape" });
+  pdf.table(10, 10, body, headers, { autoSize: true });
+  pdf.save("asd.pdf");
+}
 
 onMounted(async () => {
   await traerDatos();
@@ -118,10 +160,6 @@ watch(
     }
   }
 );
-
-const loading = ref(false);
-const filter = ref("");
-const rows = ref([]);
 
 async function traerDatos() {
   try {

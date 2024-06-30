@@ -18,11 +18,11 @@
           @click="traerDatos"
         />
 
-        <CrearCategoria
+        <CrearCliente
           @traerDatos="traerDatos"
           @cerrar="cerrar"
-          :editarCategoria="editarCategoria"
-          :cat="categoria"
+          :editarUsuario="editarUsuario"
+          :usu="usuario"
         />
 
         <q-space />
@@ -44,17 +44,12 @@
             icon="edit"
             color="primary"
             @click="modificarDatos(props.row)"
-            padding="4px"
           />
-          <q-btn
-            icon="delete"
-            color="red"
-            @click="borrarDatos(props.row.id)"
-            padding="4px"
-          />
+          <q-btn icon="delete" color="red" @click="borrarDatos(props.row.id)" />
         </q-td>
       </template>
     </q-table>
+    <q-btn color="primary" label="DOWNLOAD PDF" @click="donwloadPDF()" />
   </div>
 </template>
 
@@ -62,32 +57,77 @@
 import { ref, onMounted } from "vue";
 import { api } from "boot/axios";
 import { useQuasar } from "quasar";
-import CrearCategoria from "src/components/CrearCategoria.vue";
+import CrearCliente from "./CrearCliente.vue";
 
 const $q = useQuasar();
 const props = defineProps(["refrescarTabla"]);
 const emit = defineEmits(["capturarDatos"]);
 
-const editarCategoria = ref(false);
-const categoria = ref({});
+const editarUsuario = ref(false);
+const usuario = ref({});
 
 const columns = [
   {
     name: "acciones",
-    label: "Edit/Eli",
+    label: "Botones",
     align: "left",
     field: "acciones",
   },
 
   {
-    name: "nombre",
+    name: "idRol",
+    label: "Rol",
     align: "left",
-    label: "Categoria",
-    field: "nombre",
-    sortable: true,
+    field: (row) => row.roles.nombre,
   },
-  { name: "detalle", label: "Descripcion", field: "detalle", align: "left" },
-  { name: "estado", label: "Estado", field: "estado", align: "left" },
+
+  {
+    name: "numero_documento",
+    label: "Numero de Documento",
+    field: "numeroDocumento",
+    align: "left",
+  },
+
+  {
+    name: "nombres",
+    label: "Nombres",
+    field: "nombres",
+    align: "left",
+  },
+  {
+    name: "primer_apellido",
+    label: "Apellido Paterno",
+    field: "primerApellido",
+    align: "left",
+  },
+
+  {
+    name: "segundo_apellido",
+    label: "Apellido Materno",
+    field: "segundoApellido",
+    align: "left",
+  },
+
+  {
+    name: "celular",
+    label: "Numero de Celular",
+    field: "celular",
+    align: "left",
+  },
+
+  {
+    name: "correo_electronico",
+    label: "Correo Electronico",
+    field: "correoElectronico",
+    align: "left",
+  },
+
+  {
+    name: "estado",
+    label: "Estado",
+    field: "estado",
+    align: "left",
+  },
 ];
 
 onMounted(async () => {
@@ -97,40 +137,55 @@ onMounted(async () => {
 const loading = ref(false);
 const filter = ref("");
 const rows = ref([]);
+const lista = ref([]);
+const clientes = ref([]);
+const codigo = ref("");
+//const roles = ref({});
+const rol = ref({});
 
 async function traerDatos() {
-  const categoria = await api.get("/farmacia/categoria");
-  rows.value = categoria.data.datos;
+  const roles = await api.get(`/system/roles`);
+  rol.value = roles.data.datos;
+  codigo.value = rol.value.find((nombre) => nombre.nombre === "CLIENTE");
+  //console.log("CLIENTE", codigo.value);
+
+  const usu = await api.get(`/system/usuario?idRol=${codigo.value.id}`);
+  rows.value = usu.data.datos;
+
+  /*clientes.value = lista.value.find(
+    (nombre) => nombre.idRol === codigo.value.id
+  );*/
+  /*rows.value = lista.value;
+  console.log(codigo.value.id, "LISTA", lista.value, clientes.value);*/
 }
 
 function modificarDatos(datos) {
-  editarCategoria.value = true;
-  categoria.value = datos;
+  editarUsuario.value = true;
+  usuario.value = datos;
 }
 
 function cerrar() {
-  editarCategoria.value = false;
-  categoria.value = {};
+  editarUsuario.value = false;
+  usuario.value = {};
 }
 
 async function borrarDatos(id) {
   try {
     $q.dialog({
-      title: "Eliminar Categoria",
-      message: "¿Esta seguro de eliminar esta Categoria?",
+      title: "Eliminar Cliente",
+      message: "¿Esta seguro de eliminar este Cliente?",
       cancel: true,
       persistent: true,
     })
       .onOk(async () => {
-        const nomCat = rows.value.find((nombre) => id === nombre.id);
-        await api.delete("/farmacia/categoria/" + id);
-        console.log("Borrado de Categoria correctamente");
+        const borrado = await api.delete("/system/usuario/" + id);
+        //console.log("Borrado de Cliente correctamente");
         $q.notify({
           position: "bottom",
           timeout: 4500,
           textColor: "white",
           actions: [{ icon: "close", color: "white" }],
-          message: `Categoria ${nomCat.nombre} ELIMINADA"`,
+          message: `Cliente ${borrado.nombre}ELIMINADA`,
         });
         await traerDatos();
       })
@@ -145,14 +200,6 @@ async function borrarDatos(id) {
       });
   } catch (error) {
     console.log(error);
-    $q.notify({
-      position: "bottom",
-      timeout: 4500,
-      color: "red-5",
-      textColor: "White",
-      actions: [{ icon: "close", color: "white" }],
-      message: `EROOR, No se pudo eliminar la Categoria ${nomCat.nombre}`,
-    });
   }
 }
 </script>

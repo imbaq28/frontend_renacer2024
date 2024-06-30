@@ -39,9 +39,9 @@
       </div>
       <div>
         <CrearCliente
-          @traerDatos="traerDatos"
+          @traerDatos="traerDatosCliente"
+          @clienteCreado="clienteCreado"
           @cerrar="cerrar"
-          :editarCliente="editarCliente"
           :clie="cliente"
         />
       </div>
@@ -111,12 +111,7 @@
         >
           <template #body-cell-acciones="props">
             <q-td :props="props" style="width: 50px">
-              <q-btn
-                icon="ti-close"
-                color="red"
-                style="width: 35px"
-                padding="1px"
-              />
+              <q-btn icon="ti-cut" color="purple" padding="1px" />
             </q-td>
           </template>
         </q-table>
@@ -178,21 +173,22 @@ const loading = ref(false);
 const filter = ref("");
 const Clientes = ref([]);
 
-const compra = ref({
+/*const compra = ref({
   id: "",
   idNombre: "",
   cantidad: 0,
   precioCompra: 0.0,
   estado: "ACTIVO",
-});
+});*/
+
+async function clienteCreado(cliente) {
+  await traerDatosCliente();
+  console.log("Se creo un cliente", cliente.usercreado.id);
+  nit.value = cliente.usercreado.id;
+}
 
 const resetForm = () => {
-  compra.value = {
-    id: "",
-    total: "",
-    cantidad: 0,
-    precioCompra: 0.0,
-  };
+  (rows2.value = []), (cliente.value = ""), (total.value = 0), (nit.value = "");
 };
 
 onMounted(async () => {
@@ -205,33 +201,38 @@ onMounted(async () => {
   // console.log("se obtubo datos del proveedor", prov.data.datos);
   proveedores.value = prov.data.datos;
 
-  const usu = await api.get("/system/usuario");
+  //const usu = await api.get("/system/usuario");
   // console.log("se obtubo datos del usuario", usu.data.datos);
-  usuarios.value = usu.data.datos;
-  option.value = usu.data.datos;
+  //usuarios.value = usu.data.datos;
+  //option.value = usu.data.datos;
   //console.log("se obtubo datos del usuario", option.value);
-
+  await traerDatosCliente();
   const noms = await api.get("/farmacia/nombre");
   // console.log("se obtubo datos del medicamento nombre", noms.data.datos);
   nombres.value = noms.data.datos;
 });
 
 watch(nit, () => {
-  const usuario = usuarios.value.find((u) => u.id === nit.value);
-  //console.log(usuario, "USUARIO");
-  cliente.value = `${usuario.nombres} ${usuario.primerApellido} ${
-    usuario.segundoApellido ? usuario.segundoApellido : ""
-  }`;
+  if (nit.value) {
+    const usuario = usuarios.value.find((u) => u.id === nit.value);
+    //console.log(usuario, "USUARIO");
+    cliente.value = `${usuario.nombres} ${usuario.primerApellido} ${
+      usuario.segundoApellido ? usuario.segundoApellido : ""
+    }`;
+  }
 });
 
-async function traerDatos() {
+async function traerDatosCliente() {
   //const medi = await api.get("/farmacia/medicamento");
   //rows.value = medi.data.datos;
   //console.log("TEST MEDI", medicamento.data.datos);
   // onMounted();
 
-  const clien = await api.get("/farmacia/usuario");
-  Clientes.value = clien.data.datos;
+  const clien = await api.get("/system/usuario");
+  //Clientes.value = clien.data.datos;
+  usuarios.value = clien.data.datos;
+  option.value = clien.data.datos;
+  //console.log("trayendo datos", option.value);
   //provs.value = clien.data.datos;
 }
 
@@ -261,6 +262,7 @@ async function venta() {
       actions: [{ icon: "close", color: "white" }],
       message: `Venta realizada...`,
     });
+    resetForm();
   } catch (error) {
     console.log(error, "error venta no realizada");
     $q.notify({

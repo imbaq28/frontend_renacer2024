@@ -1,6 +1,6 @@
 <template>
   <q-btn
-    label="USUARIO NUEVO"
+    label="Crear Usuario"
     color="primary"
     @click="alert = true"
     style="width: 150px"
@@ -28,11 +28,42 @@
               />
             </div>
 
+            <div class="col-12" style="width: 100px">
+              <q-select
+                filled
+                v-model="usuario.idRol"
+                :options="opcionesRol"
+                use-input
+                hide-selected
+                fill-input
+                input-debounce="0"
+                hint="Rol"
+                emit-value
+                map-options
+                option-value="id"
+                option-label="nombre"
+                style="width: 250px; padding-bottom: 32px"
+              />
+            </div>
+
             <div class="col-12">
               <q-input v-model="usuario.usuario" label="Nombre de Usuario" />
             </div>
             <div class="col-12">
-              <q-input v-model="usuario.contrasena" label="Contraseña" />
+              <q-input
+                v-model="usuario.contrasena"
+                filled
+                :type="isPwd ? 'password' : 'text'"
+                label="Ingrese contraseña"
+              >
+                <template v-slot:append>
+                  <q-icon
+                    :name="isPwd ? 'visibility_off' : 'visibility'"
+                    class="cursor-pointer"
+                    @click="isPwd = !isPwd"
+                  />
+                </template>
+              </q-input>
             </div>
 
             <div class="q-pa-md">
@@ -144,28 +175,37 @@
       </q-card-section>
 
       <q-card-actions align="right">
-        <q-btn flat label="OK" color="primary" @click="cerrarModal" />
+        <q-btn flat label="CANCELAR" color="primary" @click="cerrarModal" />
       </q-card-actions>
     </q-card>
   </q-dialog>
 </template>
 
 <script setup>
-import { ref, watch } from "vue";
+import { ref, watch, onMounted } from "vue";
 import { api } from "boot/axios";
 import { useQuasar } from "quasar";
 
 const props = defineProps(["editarUsuario", "usu"]);
 const emit = defineEmits(["traerDatos", "cerrar"]);
 
+const isPwd = ref(true);
 const $q = useQuasar();
 const date = ref("2025/02/01");
 //const tipos = ["Usuario", "Cliente", "no se sabe"];
 const opciones = ["ACTIVO", "INACTIVO"];
+const opcionesRol = ref([]);
 const alert = ref(false);
+
+onMounted(async () => {
+  const rol = await api.get("/system/roles");
+  //console.log("se ejecuto", prov.data.datos);
+  opcionesRol.value = rol.data.datos;
+});
 
 const usuario = ref({
   id: "",
+  idRol: "",
   tipoDocumento: "",
   complemento: "",
   fechaNacimiento: "1980/01/01",
@@ -188,6 +228,7 @@ watch(
       alert.value = true;
       usuario.value = {
         id: props.usu.id,
+        idRol: props.usu.idRol,
         tipoDocumento: props.usu.tipoDocumento,
         complemento: props.usu.complemento,
         fechaNacimiento: props.usu.fechaNacimiento,
@@ -237,6 +278,7 @@ const enviarForm = async () => {
 const resetForm = () => {
   usuario.value = {
     id: "",
+    idRol: "",
     tipoDocumento: "",
     complemento: "",
     fechaNacimiento: "",

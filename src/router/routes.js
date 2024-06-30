@@ -64,6 +64,10 @@ const routes = [
         component: () => import("src/pages/Ventas2.vue"),
       },
       {
+        path: "reportes",
+        component: () => import("src/pages/Reportes.vue"),
+      },
+      {
         path: "compras",
         component: () => import("src/pages/Compra.vue"),
       },

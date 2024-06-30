@@ -8,7 +8,7 @@
   <q-dialog v-model="alert" persistent>
     <q-card>
       <q-card-section class="q-pt-none">
-        <h4>Datos del nuevo NOMBRE</h4>
+        <h4>Datos del nuevo Medicamento</h4>
 
         <q-form @submit="enviarForm" @reset="resetForm">
           <div class="col"></div>
@@ -101,7 +101,7 @@
       </q-card-section>
 
       <q-card-actions align="right">
-        <q-btn flat label="OK" color="primary" @click="cerrarModal" />
+        <q-btn flat label="CANCELAR" color="primary" @click="cerrarModal" />
       </q-card-actions>
     </q-card>
   </q-dialog>

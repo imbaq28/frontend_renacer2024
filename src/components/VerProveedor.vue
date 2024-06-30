@@ -38,26 +38,26 @@
           </template>
         </q-input>
       </template>
+
       <template #body-cell-acciones="props">
         <q-td :props="props" style="width: 50px">
           <q-btn
             icon="edit"
             color="primary"
             @click="modificarDatos(props.row)"
-            style="width: 25px"
-            padding="2px"
+            padding="4px"
           />
 
           <q-btn
             icon="delete"
             color="red"
             @click="borrarDatos(props.row.id)"
-            style="width: 25px"
-            padding="2px"
+            padding="4px"
           />
         </q-td>
       </template>
     </q-table>
+    <q-btn color="primary" label="DOWNLOAD PDF" @click="donwloadPDF()" />
   </div>
 </template>
 
@@ -66,6 +66,7 @@ import { ref, onMounted } from "vue";
 import { api } from "boot/axios";
 import { useQuasar } from "quasar";
 import CrearProveedor from "src/components/CrearProveedor.vue";
+import jsPDF from "jspdf";
 
 const $q = useQuasar();
 const props = defineProps(["refrescarTabla"]);
@@ -75,6 +76,56 @@ const emit = defineEmits(["capturarDatos"]);
 const editarProveedor = ref(false);
 const proveedor = ref({});
 const provs = ref({});
+
+/*var generateData = function (amount) {
+  var result = [];
+  var data = {
+    coin: "100",
+    game_group: "GameGroup",
+    game_name: "XPTO2",
+    game_version: "25",
+    machine: "20485861",
+    vlt: "0",
+  };
+  for (var i = 0; i < amount; i += 1) {
+    data.id = (i + 1).toString();
+    result.push(Object.assign({}, data));
+  }
+  return result;
+};*/
+
+function createHeaders(keys) {
+  var result = [];
+  for (var i = 0; i < keys.length; i += 1) {
+    result.push({
+      id: keys[i],
+      name: keys[i],
+      prompt: keys[i],
+      width: 65,
+      align: "center",
+      padding: 0,
+    });
+  }
+  return result;
+}
+
+function donwloadPDF() {
+  var headers = createHeaders(["id", "nombre", "nit", "direccion", "estado"]);
+  console.log(rows.value, "TEST");
+  const body = rows.value.map((row) => {
+    return {
+      id: row.id,
+      nombre: row.nombre,
+      nit: row.nit,
+      direccion: row.direccion,
+      estado: row.estado,
+    };
+  });
+  const pdf = new jsPDF({ putOnlyUsedFonts: true, orientation: "landscape" });
+  console.log("DATOS", body);
+  pdf.table(10, 10, body, headers, { autoSize: true });
+  pdf.save("asd.pdf");
+}
 
 const columns = [
   {

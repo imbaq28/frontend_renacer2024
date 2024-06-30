@@ -64,10 +64,12 @@
             <div class="col-12" style="width: 125px">
               <q-input v-model="compra.lote" label="Lote" />
             </div>
-            <div class="col-12" style="width: 75px">
+            <div class="col-12" style="width: 105px">
               <q-input v-model="compra.precioCompra" label="Precio de Compra" />
             </div>
-
+            <div class="col-12" style="width: 105px">
+              <q-input v-model="compra.cantidadMinima" label="Stock Minimo" />
+            </div>
             <div class="q-pa-md">
               <q-input
                 filled
@@ -142,6 +144,7 @@
                 style="width: 90px"
               />
               <q-btn
+                v-show="!editarCompra"
                 label="Reset"
                 color="primary"
                 outline
@@ -155,7 +158,7 @@
       </q-card-section>
 
       <q-card-actions align="right">
-        <q-btn flat label="OK" color="primary" @click="cerrarModal" />
+        <q-btn flat label="CANCELAR" color="primary" @click="cerrarModal" />
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -177,6 +180,7 @@ const compra = ref({
   id: "",
   idNombre: "",
   cantidad: 0,
+  cantidadMinima: 0,
   observaciones: "",
   fechaVencimiento: "2025/01/01",
   lote: "",
@@ -213,6 +217,7 @@ watch(
         id: props.comp.id,
         idNombre: props.comp.idNombre,
         cantidad: props.comp.cantidad,
+        cantidadMinima: props.comp.cantidadMinima,
         observaciones: props.comp.observaciones,
         fechaVencimiento: props.comp.fechaVencimiento,
         lote: props.comp.lote,
@@ -269,6 +274,7 @@ const resetForm = () => {
     id: "",
     idNombre: "",
     cantidad: 0,
+    cantidadMinima: 0,
     observaciones: "",
     fechaVencimiento: "2025/01/01",
     lote: "",
@@ -303,6 +309,7 @@ const modificarCompra = async () => {
 function cerrarModal() {
   alert.value = false;
   emit("cerrar");
+  resetForm();
 }
 </script>
 <style scoped type="text/css"></style>

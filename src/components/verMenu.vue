@@ -72,7 +72,12 @@ const columns = [
     align: "left",
     field: "acciones",
   },
-
+  {
+    name: "nombre",
+    align: "left",
+    label: "Nombre de Menu",
+    field: "nombre",
+  },
   {
     name: "ruta",
     align: "left",
@@ -93,7 +98,7 @@ const filter = ref("");
 const rows = ref([]);
 
 async function traerDatos() {
-  const menu = await api.get("/farmacia/menu");
+  const menu = await api.get("/system/menu");
   rows.value = menu.data.datos;
 }
 
@@ -116,7 +121,7 @@ async function borrarDatos(id) {
       persistent: true,
     })
       .onOk(async () => {
-        await api.delete("/farmacia/menu/" + id);
+        await api.delete("/system/menu/" + id);
         console.log("Borrado de MENU correctamente");
         $q.notify({
           position: "bottom",

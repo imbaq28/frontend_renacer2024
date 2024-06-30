@@ -1,6 +1,6 @@
 <template>
   <q-btn
-    label="Cliernte Nuevo"
+    label="Crear Cliente"
     color="primary"
     @click="alert = true"
     style="width: 150px"
@@ -8,10 +8,30 @@
   <q-dialog v-model="alert" persistent>
     <q-card>
       <q-card-section class="q-pt-none">
-        <div class="text-h4">Cliente Nuevo</div>
+        <div class="text-h4">Crear Cliente</div>
 
         <q-form @submit="enviarForm" @reset="resetForm">
           <div class="row q-col-gutter-md" style="width: 300px">
+            <div class="col-12" style="width: 100px">
+              <div class="col-12">
+                <q-select
+                  filled
+                  v-model="usuario.idRol"
+                  :options="opcionesRol"
+                  use-input
+                  hide-selected
+                  fill-input
+                  input-debounce="0"
+                  hint="Rol"
+                  emit-value
+                  map-options
+                  option-value="id"
+                  option-label="nombre"
+                  readonly
+                  style="width: 250px; padding-bottom: 32px"
+                />
+              </div>
+            </div>
             <div class="col-12">
               <q-input v-model="usuario.nombres" label="Nombres" />
             </div>
@@ -85,25 +105,28 @@
       </q-card-section>
 
       <q-card-actions align="right">
-        <q-btn flat label="OK" color="primary" @click="cerrarModal" />
+        <q-btn flat label="CANCELAR" color="primary" @click="cerrarModal" />
       </q-card-actions>
     </q-card>
   </q-dialog>
 </template>
 
 <script setup>
-import { ref, watch } from "vue";
+import { ref, watch, onMounted } from "vue";
 import { api } from "boot/axios";
 import { useQuasar } from "quasar";
+const opcionesRol = ref([]);
 
 const props = defineProps(["editarUsuario", "usu"]);
-const emit = defineEmits(["traerDatos", "cerrar"]);
+const emit = defineEmits(["traerDatos", "cerrar", "clienteCreado"]);
 
 const $q = useQuasar();
 const date = ref("2025/02/01");
 //const tipos = ["Usuario", "Cliente", "no se sabe"];
 const opciones = ["ACTIVO", "INACTIVO"];
 const alert = ref(false);
+const codigo = ref("");
+const rol = ref({});
 
 const usuario = ref({
   id: "",
@@ -114,7 +137,30 @@ const usuario = ref({
   correoElectronico: "",
   numeroDocumento: 0,
   estado: "ACTIVO",
-  idRol: "924a9919-45af-4ca5-a22e-4da1e89c663d",
+  idRol: codigo.value.id,
+  fechaNacimiento: "1990/01/01",
+});
+//localhost:3000/api/system/usuario?idRol=a7d22363-9401-462e-a5cf-a4b5fde77c31
+async function traerDatos() {
+  const rol = await api.get(`/system/roles`);
+  opcionesRol.value = rol.data.datos;
+  codigo.value = opcionesRol.value.find(
+    (nombre) => nombre.nombre === "CLIENTE"
+  );
+  //console.log("CODIGO", codigo.value);
+  // const usu = await api.get(`/system/usuario?idRol=${codigo.value.id}`);
+  // console.log("DATOS DATOS", usu);
+  //rows.value = usu.data.datos;
+  //console.log("DATOS DATOS", rows.value);
+  usuario.value.idRol = codigo.value.id;
+  rol.value = opcionesRol.value.find(
+    (nombre) => nombre.id === usuario.value.idRol
+  );
+
+  //console.log("se ejecuto", usuario.value.idRol);
+}
+onMounted(async () => {
+  traerDatos();
 });
 
 watch(
@@ -131,15 +177,17 @@ watch(
         correoElectronico: props.usu.correoElectronico,
         numeroDocumento: props.usu.numeroDocumento,
         estado: props.usu.estado,
-        idRol: props.usu.idRol,
+        idRol: codigo.value.id,
       };
     }
   }
 );
+
 const enviarForm = async () => {
   try {
     console.log("USUARIOS", usuario.value);
-    await api.post("/system/usuario", usuario.value);
+
+    const usercreado = await api.post("/system/usuario", usuario.value);
     $q.notify({
       position: "bottom",
       timeout: 4500,
@@ -151,8 +199,9 @@ const enviarForm = async () => {
     resetForm();
     alert.value = false;
     emit("traerDatos");
+    emit("clienteCreado", { usercreado: usercreado.data.datos });
   } catch (error) {
-    console.log("error: " + error);
+    console.log("error: " + error.message);
     $q.notify({
       position: "bottom",
       timeout: 4500,
@@ -162,12 +211,14 @@ const enviarForm = async () => {
       message: "No se pudo crear el Cliente",
     });
     resetForm();
+    traerDatos();
   }
 };
 
 const resetForm = () => {
   usuario.value = {
     id: "",
+    idRol: codigo.value.id,
     nombres: "",
     primerApellido: "",
     segundoApellido: "",
@@ -175,8 +226,9 @@ const resetForm = () => {
     correoElectronico: "",
     numeroDocumento: 0,
     estado: "ACTIVO",
-    idRol: "924a9919-45af-4ca5-a22e-4da1e89c663d",
+    fechaNacimiento: "1990/01/01",
   };
+  traerDatos();
 };
 
 const modificarUsuario = async () => {
@@ -210,6 +262,7 @@ const modificarUsuario = async () => {
 function cerrarModal() {
   alert.value = false;
   emit("cerrar");
+  traerDatos();
   resetForm();
 }
 </script>

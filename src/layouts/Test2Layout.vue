@@ -19,163 +19,28 @@
       >
         <q-list padding>
           <q-item
+            v-for="menu in usuario.roles.menus"
+            :key="menu.id"
             clickable
             v-ripple
-            to="/farmacia/usuario"
+            :to="menu.ruta"
             exact
             active-class="my-menu-link"
           >
             <q-item-section avatar>
-              <q-icon name="inbox" />
+              <q-icon :name="menu.icono" />
             </q-item-section>
 
-            <q-item-section> USUARIOS </q-item-section>
+            <q-item-section> {{ menu.nombre }} </q-item-section>
           </q-item>
-
-          <q-item
-            clickable
-            v-ripple
-            to="/farmacia/cliente"
-            exact
-            active-class="my-menu-link"
-          >
+          <q-item clickable v-ripple @click="cerrarSesion">
             <q-item-section avatar>
-              <q-icon name="inbox" />
+              <q-icon name="close" />
             </q-item-section>
 
-            <q-item-section> CLIENTES </q-item-section>
-          </q-item>
-
-          <q-item
-            clickable
-            v-ripple
-            to="/farmacia/medicamento"
-            active-class="my-menu-link"
-          >
-            <q-item-section avatar>
-              <q-icon name="today" />
-            </q-item-section>
-
-            <q-item-section> STOCKS Y PRECIOS DE VENTA </q-item-section>
-          </q-item>
-
-          <q-item
-            clickable
-            v-ripple
-            to="/farmacia/proveedores"
-            active-class="my-menu-link"
-          >
-            <q-item-section avatar>
-              <q-icon name="today" />
-            </q-item-section>
-
-            <q-item-section> PROVEEDORES</q-item-section>
-          </q-item>
-
-          <q-item
-            clickable
-            v-ripple
-            to="/farmacia/categoria"
-            active-class="my-menu-link"
-          >
-            <q-item-section avatar>
-              <q-icon name="today" />
-            </q-item-section>
-
-            <q-item-section> CATEGORIAS</q-item-section>
-          </q-item>
-
-          <q-item
-            clickable
-            v-ripple
-            to="/farmacia/presentacion"
-            active-class="my-menu-link"
-          >
-            <q-item-section avatar>
-              <q-icon name="today" />
-            </q-item-section>
-
-            <q-item-section> PRESENTACIÓN </q-item-section>
-          </q-item>
-
-          <q-item
-            clickable
-            v-ripple
-            to="/farmacia/ventas"
-            active-class="my-menu-link"
-          >
-            <q-item-section avatar>
-              <q-icon name="today" />
-            </q-item-section>
-
-            <q-item-section> VENTAS </q-item-section>
-          </q-item>
-
-          <q-item
-            clickable
-            v-ripple
-            to="/farmacia/nombre"
-            active-class="my-menu-link"
-          >
-            <q-item-section avatar>
-              <q-icon name="today" />
-            </q-item-section>
-
-            <q-item-section> MEDICAMENTO </q-item-section>
-          </q-item>
-
-          <q-item
-            clickable
-            v-ripple
-            to="/farmacia/compras"
-            active-class="my-menu-link"
-          >
-            <q-item-section avatar>
-              <q-icon name="today" />
-            </q-item-section>
-
-            <q-item-section> COMPRAS </q-item-section>
-          </q-item>
-
-          <q-item
-            clickable
-            v-ripple
-            to="/farmacia/roles"
-            active-class="my-menu-link"
-          >
-            <q-item-section avatar>
-              <q-icon name="today" />
-            </q-item-section>
-
-            <q-item-section> ROLES </q-item-section>
-          </q-item>
-
-          <q-item
-            clickable
-            v-ripple
-            to="/farmacia/menu"
-            active-class="my-menu-link"
-          >
-            <q-item-section avatar>
-              <q-icon name="today" />
-            </q-item-section>
-
-            <q-item-section> MENUS </q-item-section>
+            <q-item-section> Cerrar Sesion </q-item-section>
           </q-item>
         </q-list>
-
-        <q-item
-          clickable
-          v-ripple
-          to="/farmacia/ventas2"
-          active-class="my-menu-link"
-        >
-          <q-item-section avatar>
-            <q-icon name="today" />
-          </q-item-section>
-
-          <q-item-section> VENTAS2 </q-item-section>
-        </q-item>
       </q-scroll-area>
 
       <q-img
@@ -201,8 +66,20 @@
 
 <script setup>
 import { ref } from "vue";
+import { useQuasar } from "quasar";
+import { useRouter } from "vue-router";
 
+const $q = useQuasar();
 const drawer = ref(false);
+const usuario = $q.localStorage.getItem("user");
+const router = useRouter();
+console.log("usuario LOG", usuario);
+
+function cerrarSesion() {
+  console.log("Cerrando sesion...");
+  $q.localStorage.clear();
+  router.push("/log/login");
+}
 </script>
 
 <style lang="scss">
@@ -211,8 +88,8 @@ const drawer = ref(false);
   background: #667dd8;
 }
 body {
-  font-family: "Single Day", cursive;
-  font-weight: 400;
+  font-family: "Single Day";
+  font-weight: 600;
   font-style: normal;
 }
 </style>

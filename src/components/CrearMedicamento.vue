@@ -36,7 +36,17 @@
             <div class="row">
               <div class="col">
                 <div class="col-12" style="width: 100px">
-                  <q-input v-model="medicamento.stock" label="Stock" />
+                  <q-input
+                    v-model="medicamento.stock"
+                    label="Stock"
+                    :readonly="editarMedicamento"
+                  />
+                </div>
+                <div class="col-12" style="width: 100px">
+                  <q-input
+                    v-model="medicamento.cantidadMinima"
+                    label="Stock Minimo"
+                  />
                 </div>
               </div>
             </div>
@@ -103,7 +113,7 @@
       </q-card-section>
 
       <q-card-actions align="right">
-        <q-btn flat label="OK" color="primary" @click="cerrarModal" />
+        <q-btn flat label="CANCELAR" color="primary" @click="cerrarModal" />
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -126,6 +136,7 @@ const medicamento = ref({
   precioVenta: 0.0,
   precioUnitario: 0.0,
   stock: 0,
+  cantidadMinima: 0,
   estado: "ACTIVO",
 });
 
@@ -150,6 +161,7 @@ watch(
         precioVenta: props.med.precioVenta,
         precioUnitario: props.med.precioUnitario,
         stock: props.med.stock,
+        cantidadMinima: props.med.cantidadMinima,
         estado: props.med.estado,
       };
     }
@@ -176,6 +188,7 @@ const resetForm = () => {
     precioVenta: 0.0,
     precioUnitario: 0.0,
     stock: 0,
+    cantidadMinima: 0,
     estado: "ACTIVO",
   };
 };

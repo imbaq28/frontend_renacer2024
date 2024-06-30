@@ -1,28 +1,3 @@
-<script setup>
-import { ref } from "vue";
-import CrearUsuario from "src/components/CrearUsuario.vue";
-const password = ref("");
-
-const isPwd = ref(true);
-const email = ref("");
-const text = ref("");
-const text2 = ref("");
-const loading = ref([false, false, false, false, false, false]);
-
-const progress = ref(false);
-
-function simulateProgress(number) {
-  // we set loading state
-  loading.value[number] = true;
-
-  // simulate a delay
-  setTimeout(() => {
-    // we're done, we reset loading state
-    loading.value[number] = false;
-  }, 3000);
-}
-</script>
-
 <template>
   <div
     class="text-h3 text-center q-pa-sm q-page padding"
@@ -48,7 +23,7 @@ function simulateProgress(number) {
           <div class="col">
             <div>
               <q-input
-                v-model="text"
+                v-model="usuario"
                 filled
                 type="text"
                 label="Ingrese su Usuario"
@@ -60,8 +35,7 @@ function simulateProgress(number) {
               <q-btn
                 :loading="loading[3]"
                 color="primary"
-                @click="simulateProgress(3)"
-                to="/farmacia"
+                @click="ingresarSistema"
                 style="width: 150px"
               >
                 Ingresar
@@ -78,7 +52,7 @@ function simulateProgress(number) {
           <div class="col">
             <div>
               <q-input
-                v-model="text2"
+                v-model="password"
                 filled
                 :type="isPwd ? 'password' : 'text'"
                 label="Ingrese contraseña"
@@ -104,6 +78,48 @@ function simulateProgress(number) {
     <div class="col"></div>
   </div>
 </template>
+
+<script setup>
+import { ref } from "vue";
+import CrearUsuario from "src/components/CrearUsuario.vue";
+import { api } from "src/boot/axios";
+import { useRouter } from "vue-router";
+import { useQuasar } from "quasar";
+
+const router = useRouter();
+const isPwd = ref(true);
+const email = ref("");
+const password = ref("");
+const usuario = ref("");
+const loading = ref([false, false, false, false, false, false]);
+const $q = useQuasar();
+const progress = ref(false);
+
+function simulateProgress(number) {
+  // we set loading state
+  loading.value[number] = true;
+
+  // simulate a delay
+  setTimeout(() => {
+    // we're done, we reset loading state
+    loading.value[number] = false;
+  }, 3000);
+}
+
+async function ingresarSistema() {
+  try {
+    const usu = await api.post(`/system/usuario/login`, {
+      usuario: usuario.value,
+      contrasena: password.value,
+    });
+    console.log(usu, "USS PASS");
+    $q.localStorage.set("user", usu.data.datos);
+    router.push("/farmacia/");
+  } catch (error) {
+    console.log("error", error);
+  }
+}
+</script>
 
 <style>
 .greeting {

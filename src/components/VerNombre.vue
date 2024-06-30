@@ -40,20 +40,18 @@
         </q-input>
       </template>
       <template #body-cell-acciones="props">
-        <q-td :props="props" style="width: 60px">
+        <q-td :props="props" style="width: 50px">
           <q-btn
             icon="edit"
             color="primary"
             @click="modificarDatos(props.row)"
-            style="width: 25px"
-            padding="2px"
+            padding="4px"
           />
           <q-btn
             icon="delete"
             color="red"
             @click="borrarDatos(props.row.id)"
-            style="width: 25px"
-            padding="2px"
+            padding="4px"
           />
         </q-td>
       </template>

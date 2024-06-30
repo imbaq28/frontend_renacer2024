@@ -7,7 +7,7 @@
   />
   <q-dialog v-model="alert" persistent>
     <q-card>
-      <q-card-section class="q-pt-none" :ref="resetForm()">
+      <q-card-section class="q-pt-none">
         <h4>Datos del nuevo MENU</h4>
 
         <q-form @submit="enviarForm" @reset="resetForm">
@@ -75,7 +75,7 @@
       </q-card-section>
 
       <q-card-actions align="right">
-        <q-btn flat label="OK" color="primary" @click="cerrarModal" />
+        <q-btn flat label="CANCELAR" color="primary" @click="cerrarModal" />
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -124,7 +124,7 @@ watch(
 const enviarForm = async () => {
   try {
     if (menu.value.nombre.length > 0) {
-      const men = await api.post("/farmacia/menu", menu.value);
+      const men = await api.post("/system/menu", menu.value);
       $q.notify({
         position: "bottom",
         timeout: 4500,
@@ -152,7 +152,7 @@ const enviarForm = async () => {
 };
 
 const resetForm = () => {
-  categoria.value = {
+  menu.value = {
     nombre: "",
     ruta: "",
     icono: "",
@@ -164,7 +164,7 @@ const resetForm = () => {
 
 const modificarMenu = async () => {
   try {
-    await api.put(`/farmacia/menu/${menu.value.id}`, menu.value);
+    await api.put(`/system/menu/${menu.value.id}`, menu.value);
     $q.notify({
       position: "bottom",
       timeout: 4500,

@@ -102,3 +102,169 @@
             </q-item>
           </template>
         </q-select>
+
+
+
+
+
+
+
+
+        <q-item
+            clickable
+            v-ripple
+            to="/farmacia/usuario"
+            exact
+            active-class="my-menu-link"
+          >
+            <q-item-section avatar>
+              <q-icon name="inbox" />
+            </q-item-section>
+
+            <q-item-section> USUARIOS </q-item-section>
+          </q-item>
+
+          <q-item
+            clickable
+            v-ripple
+            to="/farmacia/cliente"
+            exact
+            active-class="my-menu-link"
+          >
+            <q-item-section avatar>
+              <q-icon name="inbox" />
+            </q-item-section>
+
+            <q-item-section> CLIENTES </q-item-section>
+          </q-item>
+
+          <q-item
+            clickable
+            v-ripple
+            to="/farmacia/medicamento"
+            active-class="my-menu-link"
+          >
+            <q-item-section avatar>
+              <q-icon name="today" />
+            </q-item-section>
+
+            <q-item-section> STOCKS Y PRECIOS DE VENTA </q-item-section>
+          </q-item>
+
+          <q-item
+            clickable
+            v-ripple
+            to="/farmacia/proveedores"
+            active-class="my-menu-link"
+          >
+            <q-item-section avatar>
+              <q-icon name="today" />
+            </q-item-section>
+
+            <q-item-section> PROVEEDORES</q-item-section>
+          </q-item>
+
+          <q-item
+            clickable
+            v-ripple
+            to="/farmacia/categoria"
+            active-class="my-menu-link"
+          >
+            <q-item-section avatar>
+              <q-icon name="today" />
+            </q-item-section>
+
+            <q-item-section> CATEGORIAS</q-item-section>
+          </q-item>
+
+          <q-item
+            clickable
+            v-ripple
+            to="/farmacia/presentacion"
+            active-class="my-menu-link"
+          >
+            <q-item-section avatar>
+              <q-icon name="today" />
+            </q-item-section>
+
+            <q-item-section> PRESENTACIÓN </q-item-section>
+          </q-item>
+
+          <q-item
+            clickable
+            v-ripple
+            to="/farmacia/nombre"
+            active-class="my-menu-link"
+          >
+            <q-item-section avatar>
+              <q-icon name="today" />
+            </q-item-section>
+
+            <q-item-section> MEDICAMENTO </q-item-section>
+          </q-item>
+
+          <q-item
+            clickable
+            v-ripple
+            to="/farmacia/compras"
+            active-class="my-menu-link"
+          >
+            <q-item-section avatar>
+              <q-icon name="today" />
+            </q-item-section>
+
+            <q-item-section> COMPRAS </q-item-section>
+          </q-item>
+
+          <q-item
+            clickable
+            v-ripple
+            to="/farmacia/roles"
+            active-class="my-menu-link"
+          >
+            <q-item-section avatar>
+              <q-icon name="today" />
+            </q-item-section>
+
+            <q-item-section> ROLES </q-item-section>
+          </q-item>
+
+          <q-item
+            clickable
+            v-ripple
+            to="/farmacia/menu"
+            active-class="my-menu-link"
+          >
+            <q-item-section avatar>
+              <q-icon name="today" />
+            </q-item-section>
+
+            <q-item-section> MENUS </q-item-section>
+          </q-item>
+        </q-list>
+
+        <q-item
+          clickable
+          v-ripple
+          to="/farmacia/ventas2"
+          active-class="my-menu-link"
+        >
+          <q-item-section avatar>
+            <q-icon name="today" />
+          </q-item-section>
+
+          <q-item-section> VENTAS </q-item-section>
+        </q-item>
+
+        <q-item
+          clickable
+          v-ripple
+          to="/farmacia/reportes"
+          active-class="my-menu-link"
+        >
+          <q-item-section avatar>
+            <q-icon name="today" />
+          </q-item-section>
+
+          <q-item-section> REPORTES </q-item-section>
+        </q-item>

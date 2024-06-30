@@ -45,19 +45,18 @@
             icon="edit"
             color="primary"
             @click="modificarDatos(props.row)"
-            style="width: 25px"
-            padding="2px"
+            padding="4px"
           />
           <q-btn
             icon="delete"
             color="red"
             @click="borrarDatos(props.row.id)"
-            style="width: 25px"
-            padding="2px"
+            padding="4px"
           />
         </q-td>
       </template>
     </q-table>
+    <q-btn color="primary" label="DOWNLOAD PDF" @click="donwloadPDF()" />
   </div>
 </template>
 
@@ -89,6 +88,7 @@ const columns = [
   },
 
   { name: "cantidad", label: "Cantidad", field: "cantidad" },
+  { name: "cantidad_minima", label: "Stock Minimo", field: "cantidadMinima" },
 
   { name: "observaciones", label: "Observaciones", field: "observaciones" },
 
@@ -139,6 +139,7 @@ const nombres = ref([]);
 async function traerDatos() {
   const compra = await api.get("/farmacia/compras");
   rows.value = compra.data.datos;
+  console.log("ROW", rows.value);
 }
 
 function modificarDatos(datos) {
@@ -186,3 +187,7 @@ async function borrarDatos(id) {
   }
 }
 </script>
+<style scoped>
+* {
+}
+</style>

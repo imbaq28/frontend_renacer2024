@@ -49,6 +49,7 @@
         </q-td>
       </template>
     </q-table>
+    <q-btn color="primary" label="DOWNLOAD PDF" @click="donwloadPDF()" />
   </div>
 </template>
 
@@ -71,6 +72,13 @@ const columns = [
     label: "Botones",
     align: "left",
     field: "acciones",
+  },
+
+  {
+    name: "id_rol",
+    label: "Rol",
+    align: "left",
+    field: (row) => row.roles.nombre,
   },
 
   {
@@ -169,6 +177,7 @@ const rows = ref([]);
 async function traerDatos() {
   const usuario = await api.get("/system/usuario");
   rows.value = usuario.data.datos;
+  console.log("ROW", rows.value);
 }
 
 function modificarDatos(datos) {
