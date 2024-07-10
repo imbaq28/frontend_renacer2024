@@ -224,6 +224,7 @@ const modificarNombre = async () => {
 function cerrarModal() {
   alert.value = false;
   emit("cerrar");
+  resetForm();
 }
 </script>
 

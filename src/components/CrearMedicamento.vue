@@ -229,6 +229,7 @@ const modificarMedicamento = async () => {
 function cerrarModal() {
   alert.value = false;
   emit("cerrar");
+  resetForm();
 }
 
 function traerDatosMedicamentos() {

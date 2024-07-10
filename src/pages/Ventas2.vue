@@ -155,9 +155,10 @@ import { useQuasar } from "quasar";
 import CrearCliente from "src/components/CrearCliente.vue";
 
 const nit = ref("");
+
 const rows = ref([]);
 const rows2 = ref([]);
-const cliente = ref("");
+const cliente = ref("S/N");
 const $q = useQuasar();
 const option = ref([]);
 const proveedores = ref([]);
@@ -172,14 +173,8 @@ const usu = ref("");
 const loading = ref(false);
 const filter = ref("");
 const Clientes = ref([]);
-
-/*const compra = ref({
-  id: "",
-  idNombre: "",
-  cantidad: 0,
-  precioCompra: 0.0,
-  estado: "ACTIVO",
-});*/
+const rol = ref({});
+const codigo = ref("");
 
 async function clienteCreado(cliente) {
   await traerDatosCliente();
@@ -191,7 +186,7 @@ const resetForm = () => {
   (rows2.value = []), (cliente.value = ""), (total.value = 0), (nit.value = "");
 };
 
-onMounted(async () => {
+async function traerDatos() {
   const med = await api.get("/farmacia/medicamento");
   //console.log("MEDICAMENTO DATOS", med.data.datos);
   medicamento.value = med.data.datos;
@@ -210,6 +205,10 @@ onMounted(async () => {
   const noms = await api.get("/farmacia/nombre");
   // console.log("se obtubo datos del medicamento nombre", noms.data.datos);
   nombres.value = noms.data.datos;
+}
+
+onMounted(async () => {
+  traerDatos();
 });
 
 watch(nit, () => {
@@ -223,17 +222,14 @@ watch(nit, () => {
 });
 
 async function traerDatosCliente() {
-  //const medi = await api.get("/farmacia/medicamento");
-  //rows.value = medi.data.datos;
-  //console.log("TEST MEDI", medicamento.data.datos);
-  // onMounted();
+  const roles = await api.get(`/system/roles`);
+  rol.value = roles.data.datos;
+  codigo.value = rol.value.find((nombre) => nombre.nombre === "CLIENTE");
 
-  const clien = await api.get("/system/usuario");
-  //Clientes.value = clien.data.datos;
+  const clien = await api.get(`/system/usuario?idRol=${codigo.value.id}`);
+
   usuarios.value = clien.data.datos;
   option.value = clien.data.datos;
-  //console.log("trayendo datos", option.value);
-  //provs.value = clien.data.datos;
 }
 
 async function venta() {
@@ -253,16 +249,33 @@ async function venta() {
   };
   try {
     //console.log("VENTAS", venta);
-    await api.post("/farmacia/ventas", venta);
-    $q.notify({
-      position: "bottom",
-      timeout: 3500,
-      color: "green-5",
-      textColor: "White",
-      actions: [{ icon: "close", color: "white" }],
-      message: `Venta realizada...`,
-    });
-    resetForm();
+
+    $q.dialog({
+      title: "VENTA",
+      message: "¿Esta seguro que desea realizar la venta?",
+      cancel: true,
+      persistent: true,
+    })
+      .onOk(async () => {
+        await api.post("/farmacia/ventas", venta);
+        console.log("Venta realizada...");
+        $q.notify({
+          position: "bottom",
+          timeout: 3500,
+          color: "green-5",
+          textColor: "White",
+          actions: [{ icon: "close", color: "white" }],
+          message: `Venta realizada...`,
+        });
+        resetForm();
+        traerDatos();
+      })
+      .onCancel(() => {
+        // console.log('>>>> Cancel')
+      })
+      .onDismiss(() => {
+        // console.log('I am triggered on both OK and Cancel')
+      });
   } catch (error) {
     console.log(error, "error venta no realizada");
     $q.notify({
@@ -310,9 +323,7 @@ function agregar(id) {
           );
         }
       })
-      .onCancel(() => {
-        //
-      })
+      .onCancel(() => {})
       .onDismiss(() => {
         //
       });
@@ -332,7 +343,7 @@ function filterFn(val, update, abort) {
 }
 
 function cerrar() {
-  editarCliente.value = false;
+  //editarCliente.value = false;
   Clientes.value = {};
 }
 

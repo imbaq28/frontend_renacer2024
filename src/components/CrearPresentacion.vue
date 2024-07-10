@@ -183,6 +183,7 @@ const modificarPresentacion = async () => {
 function cerrarModal() {
   alert.value = false;
   emit("cerrar");
+  resetForm();
 }
 </script>
 

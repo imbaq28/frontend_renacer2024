@@ -85,6 +85,7 @@ import CrearUsuario from "src/components/CrearUsuario.vue";
 import { api } from "src/boot/axios";
 import { useRouter } from "vue-router";
 import { useQuasar } from "quasar";
+import axios from "axios";
 
 const router = useRouter();
 const isPwd = ref(true);
@@ -114,7 +115,7 @@ async function ingresarSistema() {
     });
     console.log(usu, "USS PASS");
     $q.localStorage.set("user", usu.data.datos);
-    router.push("/farmacia/");
+    router.push("/farmacia/bienvenidos");
   } catch (error) {
     console.log("error", error);
   }

@@ -268,3 +268,61 @@
 
           <q-item-section> REPORTES </q-item-section>
         </q-item>
+
+        <q-table
+      flat
+      bordered
+      title="Treats"
+      :rows="rows"
+      :columns="columns"
+      row-key="id"
+      :rows-per-page-options="[10, 15, 20, 25]"
+      :filter="filter"
+      :loading="loading"
+    >
+      <template v-slot:>
+        <q-btn
+          color="primary"
+          :disable="loading"
+          label="Traer Datos"
+          @click="traerDatos"
+        />
+
+        <q-space />
+        <q-input
+          borderless
+          dense
+          debounce="300"
+          color="primary"
+          v-model="filter"
+        >
+          <template v-slot:append>
+            <q-icon name="search" />
+          </template>
+        </q-input>
+      </template>
+
+      <template #body-cell-acciones="props">
+        <q-td :props="props" style="width: 50px">
+          <q-btn
+            icon="edit"
+            color="primary"
+            @click="modificarDatos(props.row)"
+            padding="4px"
+          />
+
+          <q-btn
+            icon="delete"
+            color="red"
+            @click="borrarDatos(props.row.id)"
+            padding="4px"
+          />
+        </q-td>
+
+        <q-td v-show="props.expand" :props="props" colspan="100%">
+          <div class="text-left">
+            This is expand slot for row above: {{ props.row.name }}.
+          </div>
+        </q-td>
+      </template>
+    </q-table>

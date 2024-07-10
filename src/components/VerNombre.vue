@@ -55,6 +55,11 @@
           />
         </q-td>
       </template>
+      <template #body-cell-imagen="props">
+        <q-td :props="props">
+          <img :src="props.row.imagen" style="width: 50px" />
+        </q-td>
+      </template>
     </q-table>
   </div>
 </template>

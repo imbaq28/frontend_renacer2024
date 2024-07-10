@@ -164,7 +164,11 @@ const resetForm = () => {
 
 const modificarMenu = async () => {
   try {
-    await api.put(`/system/menu/${menu.value.id}`, menu.value);
+    const valorCambiado = await api.put(
+      `/system/menu/${menu.value.id}`,
+      menu.value
+    );
+    console.log("MODI MENU", valorCambiado);
     $q.notify({
       position: "bottom",
       timeout: 4500,
@@ -184,6 +188,7 @@ const modificarMenu = async () => {
 function cerrarModal() {
   alert.value = false;
   emit("cerrar");
+  resetForm();
 }
 </script>
 <style scoped type="text/css"></style>

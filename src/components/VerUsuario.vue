@@ -111,12 +111,7 @@ const columns = [
     field: "usuario",
     align: "left",
   },
-  {
-    name: "contrasena",
-    label: "Contraseña",
-    field: "contrasena",
-    align: "left",
-  },
+
   {
     name: "nombres",
     label: "Nombres",

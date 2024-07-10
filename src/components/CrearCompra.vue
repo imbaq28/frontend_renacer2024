@@ -195,6 +195,8 @@ const proveedores = ref([]);
 const nombres = ref([]);
 const option = ref([]);
 const option2 = ref([]);
+const provId = ref("");
+const compras = ref([]);
 
 onMounted(async () => {
   const prov = await api.get("/farmacia/proveedores");
@@ -206,6 +208,11 @@ onMounted(async () => {
   //console.log("se ejecuto", noms.data.datos);
   nombres.value = noms.data.datos;
   option.value = noms.data.datos;
+
+  //const comp = await api.get("/farmacia/compras");
+  //compras.value = comp.data.datos;
+
+  //console.log("compras PROV", compras.value, proveedores.value);
 });
 
 watch(
@@ -227,6 +234,14 @@ watch(
       };
     }
   }
+
+  /*() => {
+    if (option2.value.id) {
+      const provee = proveedores.value.find((u) => u.id === option2.value.id);
+      option2.value = provee.value;
+      console.log("IDE PROV", option2.value);
+    }
+  }*/
 );
 function filterFn(val, update, abort) {
   update(() => {
@@ -234,6 +249,11 @@ function filterFn(val, update, abort) {
     option.value = nombres.value.filter(
       (v) => v.nombre.toLowerCase().indexOf(needle) > -1
     );
+    /*provId.value = String(compra.value.idNombre);
+    const encontrarProv = compras.value.find(
+      (id) => id.idNombre === provId.value
+    );
+    console.log("BUSCANDO PROV", compras.value);*/
   });
 }
 

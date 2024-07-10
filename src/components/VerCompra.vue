@@ -139,7 +139,7 @@ const nombres = ref([]);
 async function traerDatos() {
   const compra = await api.get("/farmacia/compras");
   rows.value = compra.data.datos;
-  console.log("ROW", rows.value);
+  //console.log("ROW", rows.value);
 }
 
 function modificarDatos(datos) {
@@ -162,7 +162,7 @@ async function borrarDatos(id) {
     })
       .onOk(async () => {
         const nomComp = rows.value.find((nombre) => nombre.id === id);
-        console.log("AAAAAAAAAAAAAA", nomComp, id);
+        console.log("Eliminando", nomComp, id);
         await api.delete("/farmacia/compras/" + id);
         $q.notify({
           position: "bottom",

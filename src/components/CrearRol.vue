@@ -86,9 +86,7 @@ import { useQuasar } from "quasar";
 
 const props = defineProps(["editarRol", "rol"]);
 const emit = defineEmits(["traerDatos", "cerrar"]);
-
 const opciones = ["ACTIVO", "INACTIVO"];
-
 const $q = useQuasar();
 const option = ref([]);
 
@@ -188,6 +186,7 @@ const modificarRol = async () => {
 function cerrarModal() {
   alert.value = false;
   emit("cerrar");
+  resetForm();
 }
 </script>
 <style scoped type="text/css"></style>

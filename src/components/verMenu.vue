@@ -6,6 +6,7 @@
       title="Treats"
       :rows="rows"
       :columns="columns"
+      :rows-per-page-options="[15, 20, 25]"
       row-key="id"
       :filter="filter"
       :loading="loading"

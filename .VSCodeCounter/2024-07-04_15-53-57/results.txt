@@ -1,0 +1,104 @@
+Date : 2024-07-04 15:53:57
+Directory : e:\proyecto_renacer2024\frontend_renacer
+Total : 61 files,  6228 codes, 206 comments, 689 blanks, all 7123 lines
+
+Languages
++--------------------+------------+------------+------------+------------+------------+
+| language           | files      | code       | comment    | blank      | total      |
++--------------------+------------+------------+------------+------------+------------+
+| vue                |         45 |      5,764 |          0 |        577 |      6,341 |
+| JavaScript         |          8 |        307 |        191 |         86 |        584 |
+| JSON               |          1 |         39 |          0 |          1 |         40 |
+| JSON with Comments |          1 |         39 |          0 |          0 |         39 |
+| Markdown           |          1 |         30 |          0 |         12 |         42 |
+| HTML               |          1 |         18 |          1 |          3 |         22 |
+| XML                |          1 |         15 |          0 |          0 |         15 |
+| SCSS               |          2 |         10 |         11 |          8 |         29 |
+| TypeScript         |          1 |          6 |          3 |          2 |         11 |
++--------------------+------------+------------+------------+------------+------------+
+
+Directories
++-------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                          | files      | code       | comment    | blank      | total      |
++-------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                             |         61 |      6,228 |        206 |        689 |      7,123 |
+| . (Files)                                                                     |          7 |        245 |        123 |         69 |        437 |
+| src                                                                           |         54 |      5,983 |         83 |        620 |      6,686 |
+| src (Files)                                                                   |          1 |          8 |          0 |          2 |         10 |
+| src\assets                                                                    |          1 |         15 |          0 |          0 |         15 |
+| src\boot                                                                      |          1 |         29 |         40 |         10 |         79 |
+| src\components                                                                |         23 |      4,384 |          0 |        441 |      4,825 |
+| src\css                                                                       |          2 |         10 |         11 |          8 |         29 |
+| src\layouts                                                                   |          4 |        227 |          0 |         28 |        255 |
+| src\pages                                                                     |         17 |      1,145 |          0 |        106 |      1,251 |
+| src\router                                                                    |          2 |        139 |         19 |         16 |        174 |
+| src\stores                                                                    |          3 |         26 |         13 |          9 |         48 |
++-------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++-------------------------------------------------------------------------------+--------------------+------------+------------+------------+------------+
+| filename                                                                      | language           | code       | comment    | blank      | total      |
++-------------------------------------------------------------------------------+--------------------+------------+------------+------------+------------+
+| e:\proyecto_renacer2024\frontend_renacer\.eslintrc.cjs                        | JavaScript         |         34 |         20 |         11 |         65 |
+| e:\proyecto_renacer2024\frontend_renacer\README.md                            | Markdown           |         30 |          0 |         12 |         42 |
+| e:\proyecto_renacer2024\frontend_renacer\index.html                           | HTML               |         18 |          1 |          3 |         22 |
+| e:\proyecto_renacer2024\frontend_renacer\jsconfig.json                        | JSON with Comments |         39 |          0 |          0 |         39 |
+| e:\proyecto_renacer2024\frontend_renacer\package.json                         | JSON               |         39 |          0 |          1 |         40 |
+| e:\proyecto_renacer2024\frontend_renacer\postcss.config.cjs                   | JavaScript         |         16 |          9 |          3 |         28 |
+| e:\proyecto_renacer2024\frontend_renacer\quasar.config.js                     | JavaScript         |         69 |         93 |         39 |        201 |
+| e:\proyecto_renacer2024\frontend_renacer\src\App.vue                          | vue                |          8 |          0 |          2 |         10 |
+| e:\proyecto_renacer2024\frontend_renacer\src\assets\quasar-logo-vertical.svg  | XML                |         15 |          0 |          0 |         15 |
+| e:\proyecto_renacer2024\frontend_renacer\src\boot\axios.js                    | JavaScript         |         29 |         40 |         10 |         79 |
+| e:\proyecto_renacer2024\frontend_renacer\src\components\CrearCategoria.vue    | vue                |        170 |          0 |         18 |        188 |
+| e:\proyecto_renacer2024\frontend_renacer\src\components\CrearCliente.vue      | vue                |        250 |          0 |         21 |        271 |
+| e:\proyecto_renacer2024\frontend_renacer\src\components\CrearCompra.vue       | vue                |        293 |          0 |         23 |        316 |
+| e:\proyecto_renacer2024\frontend_renacer\src\components\CrearMedicamento.vue  | vue                |        221 |          0 |         20 |        241 |
+| e:\proyecto_renacer2024\frontend_renacer\src\components\CrearMenu.vue         | vue                |        175 |          0 |         20 |        195 |
+| e:\proyecto_renacer2024\frontend_renacer\src\components\CrearNombre.vue       | vue                |        210 |          0 |         22 |        232 |
+| e:\proyecto_renacer2024\frontend_renacer\src\components\CrearPresentacion.vue | vue                |        174 |          0 |         17 |        191 |
+| e:\proyecto_renacer2024\frontend_renacer\src\components\CrearProveedor.vue    | vue                |        181 |          0 |         18 |        199 |
+| e:\proyecto_renacer2024\frontend_renacer\src\components\CrearRol.vue          | vue                |        176 |          0 |         19 |        195 |
+| e:\proyecto_renacer2024\frontend_renacer\src\components\CrearUsuario.vue      | vue                |        309 |          0 |         25 |        334 |
+| e:\proyecto_renacer2024\frontend_renacer\src\components\EssentialLink.vue     | vue                |         42 |          0 |          7 |         49 |
+| e:\proyecto_renacer2024\frontend_renacer\src\components\VerCategoria.vue      | vue                |        145 |          0 |         14 |        159 |
+| e:\proyecto_renacer2024\frontend_renacer\src\components\VerCompra.vue         | vue                |        173 |          0 |         21 |        194 |
+| e:\proyecto_renacer2024\frontend_renacer\src\components\VerMedicamento.vue    | vue                |        200 |          0 |         16 |        216 |
+| e:\proyecto_renacer2024\frontend_renacer\src\components\VerNombre.vue         | vue                |        167 |          0 |         14 |        181 |
+| e:\proyecto_renacer2024\frontend_renacer\src\components\VerPresentacion.vue   | vue                |        147 |          0 |         13 |        160 |
+| e:\proyecto_renacer2024\frontend_renacer\src\components\VerProveedor.vue      | vue                |        198 |          0 |         18 |        216 |
+| e:\proyecto_renacer2024\frontend_renacer\src\components\VerUsuario.vue        | vue                |        207 |          0 |         20 |        227 |
+| e:\proyecto_renacer2024\frontend_renacer\src\components\medi.vue              | vue                |        236 |          0 |         35 |        271 |
+| e:\proyecto_renacer2024\frontend_renacer\src\components\verClientes.vue       | vue                |        184 |          0 |         22 |        206 |
+| e:\proyecto_renacer2024\frontend_renacer\src\components\verMenu.vue           | vue                |        131 |          0 |         13 |        144 |
+| e:\proyecto_renacer2024\frontend_renacer\src\components\verRoles.vue          | vue                |        214 |          0 |         24 |        238 |
+| e:\proyecto_renacer2024\frontend_renacer\src\components\verVenta.vue          | vue                |        181 |          0 |         21 |        202 |
+| e:\proyecto_renacer2024\frontend_renacer\src\css\app.scss                     | SCSS               |          1 |          1 |          1 |          3 |
+| e:\proyecto_renacer2024\frontend_renacer\src\css\quasar.variables.scss        | SCSS               |          9 |         10 |          7 |         26 |
+| e:\proyecto_renacer2024\frontend_renacer\src\layouts\Layout.vue               | vue                |          7 |          0 |          1 |          8 |
+| e:\proyecto_renacer2024\frontend_renacer\src\layouts\MainLayout.vue           | vue                |         86 |          0 |         11 |         97 |
+| e:\proyecto_renacer2024\frontend_renacer\src\layouts\Test2Layout.vue          | vue                |         86 |          0 |         10 |         96 |
+| e:\proyecto_renacer2024\frontend_renacer\src\layouts\TestLayout.vue           | vue                |         48 |          0 |          6 |         54 |
+| e:\proyecto_renacer2024\frontend_renacer\src\pages\Bienvenida.vue             | vue                |          6 |          0 |          1 |          7 |
+| e:\proyecto_renacer2024\frontend_renacer\src\pages\Categoria.vue              | vue                |         15 |          0 |          4 |         19 |
+| e:\proyecto_renacer2024\frontend_renacer\src\pages\Cliente.vue                | vue                |         14 |          0 |          3 |         17 |
+| e:\proyecto_renacer2024\frontend_renacer\src\pages\Compra.vue                 | vue                |         15 |          0 |          4 |         19 |
+| e:\proyecto_renacer2024\frontend_renacer\src\pages\ErrorNotFound.vue          | vue                |         26 |          0 |          4 |         30 |
+| e:\proyecto_renacer2024\frontend_renacer\src\pages\IndexPage.vue              | vue                |         14 |          0 |          2 |         16 |
+| e:\proyecto_renacer2024\frontend_renacer\src\pages\LoginPage.vue              | vue                |        128 |          0 |         10 |        138 |
+| e:\proyecto_renacer2024\frontend_renacer\src\pages\Medicamento.vue            | vue                |         15 |          0 |          4 |         19 |
+| e:\proyecto_renacer2024\frontend_renacer\src\pages\Menu.vue                   | vue                |         15 |          0 |          4 |         19 |
+| e:\proyecto_renacer2024\frontend_renacer\src\pages\Nombre.vue                 | vue                |         15 |          0 |          4 |         19 |
+| e:\proyecto_renacer2024\frontend_renacer\src\pages\Presentacion.vue           | vue                |         15 |          0 |          4 |         19 |
+| e:\proyecto_renacer2024\frontend_renacer\src\pages\Proveedores.vue            | vue                |         15 |          0 |          4 |         19 |
+| e:\proyecto_renacer2024\frontend_renacer\src\pages\Reportes.vue               | vue                |        162 |          0 |         10 |        172 |
+| e:\proyecto_renacer2024\frontend_renacer\src\pages\Roles.vue                  | vue                |          9 |          0 |          2 |         11 |
+| e:\proyecto_renacer2024\frontend_renacer\src\pages\Usuario.vue                | vue                |         13 |          0 |          3 |         16 |
+| e:\proyecto_renacer2024\frontend_renacer\src\pages\Ventas.vue                 | vue                |        288 |          0 |         16 |        304 |
+| e:\proyecto_renacer2024\frontend_renacer\src\pages\Ventas2.vue                | vue                |        380 |          0 |         27 |        407 |
+| e:\proyecto_renacer2024\frontend_renacer\src\router\index.js                  | JavaScript         |         14 |         11 |          6 |         31 |
+| e:\proyecto_renacer2024\frontend_renacer\src\router\routes.js                 | JavaScript         |        125 |          8 |         10 |        143 |
+| e:\proyecto_renacer2024\frontend_renacer\src\stores\example-store.js          | JavaScript         |         14 |          0 |          2 |         16 |
+| e:\proyecto_renacer2024\frontend_renacer\src\stores\index.js                  | JavaScript         |          6 |         10 |          5 |         21 |
+| e:\proyecto_renacer2024\frontend_renacer\src\stores\store-flag.d.ts           | TypeScript         |          6 |          3 |          2 |         11 |
+| Total                                                                         |                    |      6,228 |        206 |        689 |      7,123 |
++-------------------------------------------------------------------------------+--------------------+------------+------------+------------+------------+

@@ -181,6 +181,7 @@ const modificarCategoria = async () => {
 function cerrarModal() {
   alert.value = false;
   emit("cerrar");
+  resetForm();
 }
 </script>
 <style scoped type="text/css"></style>
