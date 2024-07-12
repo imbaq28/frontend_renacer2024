@@ -69,7 +69,7 @@
           </div>
           <div class="col">
             <div>
-              <CrearUsuario />
+              <CrearCliente />
             </div>
           </div>
         </div>
@@ -81,11 +81,10 @@
 
 <script setup>
 import { ref } from "vue";
-import CrearUsuario from "src/components/CrearUsuario.vue";
+import CrearCliente from "src/components/CrearCliente.vue";
 import { api } from "src/boot/axios";
 import { useRouter } from "vue-router";
 import { useQuasar } from "quasar";
-import axios from "axios";
 
 const router = useRouter();
 const isPwd = ref(true);
@@ -117,6 +116,11 @@ async function ingresarSistema() {
     $q.localStorage.set("user", usu.data.datos);
     router.push("/farmacia/bienvenidos");
   } catch (error) {
+    $q.dialog({
+      title: "Error de ingreso...",
+      message:
+        "Revise sus credenciales de identificación... Usuario y/o contraseñas incorrectas... ",
+    });
     console.log("error", error);
   }
 }

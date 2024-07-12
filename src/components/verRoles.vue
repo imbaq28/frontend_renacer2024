@@ -61,7 +61,7 @@
       <q-card>
         <q-card-section class="q-pt-none">
           <h4>DESIGNACION DE ROLES</h4>
-
+          {{ menusSeleccionados }}
           <form action="">
             <q-select
               filled
@@ -173,11 +173,13 @@ async function traerDatos() {
   console.log("MENUSROLES", menusRoles.value);
 }
 async function guardarMenuModif() {
+  console.log("MODIF", menusSeleccionados.value);
+
   const asignacion = await api.post(
     `/system/roles/${ide.value}/agregar-menu`,
     menusSeleccionados.value
   );
-  console.log("MODIF", menusSeleccionados.value);
+
   cerrarModal();
 }
 async function guardarMenu() {
@@ -185,7 +187,7 @@ async function guardarMenu() {
     `/system/roles/${ide.value}/agregar-menu`,
     menusSeleccionados.value
   );
-  console.log("ASIGNACION", menusSeleccionados.value);
+  console.log("ASIGNACION", asignacion);
   alert.value = false;
   cerrarModal();
 }
@@ -213,13 +215,13 @@ async function asignarMenu(id) {
   //const cargarRoles = await api.get(`/system/roles/${id}`);
   cargar.value = men.value.find((nombre) => nombre.id === ide.value);
 
-  menusSeleccionados.value = cargar.value.menus;
+  menusSeleccionados.value = cargar.value.menus.map((m) => m.id);
   if (menusSeleccionados.value.length === 0) {
     designMenu.value = true;
   } else {
     designMenu.value = false;
   }
-  console.log(menusSeleccionados.value, "ROLES", designMenu.value);
+  console.log(menusSeleccionados.value, "ROLES");
 }
 
 async function borrarDatos(id) {

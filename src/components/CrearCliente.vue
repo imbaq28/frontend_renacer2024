@@ -56,11 +56,16 @@
             </div>
 
             <div class="col-12">
-              <q-input v-model="usuario.celular" label="Numero de celular" />
+              <q-input v-model="usuario.celular" label="Número de celular" />
             </div>
 
             <div class="col-12">
-              <q-input filled v-model="usuario.correoElectronico" type="email">
+              <q-input
+                filled
+                v-model="usuario.correoElectronico"
+                type="email"
+                label="Correo Electrónico"
+              >
                 <template v-slot:before>
                   <q-icon name="mail" />
                 </template>
@@ -156,6 +161,7 @@ async function traerDatos() {
   rol.value = opcionesRol.value.find(
     (nombre) => nombre.id === usuario.value.idRol
   );
+  console.log("DATOS cLIENTE", codigo.value);
 
   //console.log("se ejecuto", usuario.value.idRol);
 }
@@ -186,7 +192,11 @@ watch(
 const enviarForm = async () => {
   try {
     console.log("USUARIOS", usuario.value);
-
+    $q.dialog({
+      title: "CLIENTE CREADO",
+      message:
+        "El cliente a sido creado satisfactoriamente, puede tener una vista del sistema como visitante...",
+    });
     const usercreado = await api.post("/system/usuario", usuario.value);
     $q.notify({
       position: "bottom",
