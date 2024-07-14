@@ -111,7 +111,12 @@
         >
           <template #body-cell-acciones="props">
             <q-td :props="props" style="width: 50px">
-              <q-btn icon="ti-cut" color="purple" padding="1px" />
+              <q-btn
+                icon="ti-cut"
+                color="purple"
+                padding="1px"
+                @click="eliminarItem(props.row)"
+              />
             </q-td>
           </template>
         </q-table>
@@ -139,7 +144,7 @@
         <q-btn
           label="CANCELAR"
           color="primary"
-          type="submit"
+          @click="resetForm"
           style="width: 90px"
         />
       </div>
@@ -183,7 +188,10 @@ async function clienteCreado(cliente) {
 }
 
 const resetForm = () => {
-  (rows2.value = []), (cliente.value = ""), (total.value = 0), (nit.value = "");
+  (rows2.value = []),
+    (cliente.value = "S/N"),
+    (total.value = 0),
+    (nit.value = "");
 };
 
 async function traerDatos() {
@@ -233,59 +241,105 @@ async function traerDatosCliente() {
 }
 
 async function venta() {
-  const usuario = usuarios.value.find((u) => u.id === nit.value);
-
-  usu.value = usuario.id;
-  const venta = {
-    idCliente: usu.value,
-    total: total.value,
-    productos: rows2.value.map((row) => {
-      return {
-        idProducto: row.id,
-        cantidad: row.cantidad,
-        total: row.precioVenta,
-      };
-    }),
-  };
-  try {
-    //console.log("VENTAS", venta);
-
-    $q.dialog({
-      title: "VENTA",
-      message: "¿Esta seguro que desea realizar la venta?",
-      cancel: true,
-      persistent: true,
-    })
-      .onOk(async () => {
-        await api.post("/farmacia/ventas", venta);
-        console.log("Venta realizada...");
-        $q.notify({
-          position: "bottom",
-          timeout: 3500,
-          color: "green-5",
-          textColor: "White",
-          actions: [{ icon: "close", color: "white" }],
-          message: `Venta realizada...`,
+  if (nit.value) {
+    try {
+      $q.dialog({
+        title: "VENTA",
+        message: "¿Esta seguro que desea realizar la venta?",
+        cancel: true,
+        persistent: true,
+      })
+        .onOk(async () => {
+          const usuario = usuarios.value.find((u) => u.id === nit.value);
+          usu.value = usuario.id;
+          const venta = {
+            idCliente: usu.value,
+            total: total.value,
+            productos: rows2.value.map((row) => {
+              return {
+                idProducto: row.id,
+                cantidad: row.cantidad,
+                total: row.precioVenta,
+              };
+            }),
+          };
+          await api.post("/farmacia/ventas", venta);
+          console.log("Venta realizada...");
+          $q.notify({
+            position: "bottom",
+            timeout: 3500,
+            color: "green-5",
+            textColor: "White",
+            actions: [{ icon: "close", color: "white" }],
+            message: `Venta realizada...`,
+          });
+          resetForm();
+          traerDatos();
+        })
+        .onCancel(() => {
+          // console.log('>>>> Cancel')
+        })
+        .onDismiss(() => {
+          // console.log('I am triggered on both OK and Cancel')
         });
-        resetForm();
-        traerDatos();
-      })
-      .onCancel(() => {
-        // console.log('>>>> Cancel')
-      })
-      .onDismiss(() => {
-        // console.log('I am triggered on both OK and Cancel')
+    } catch (error) {
+      console.log(error, "error venta no realizada");
+      $q.notify({
+        position: "bottom",
+        timeout: 3500,
+        color: "red-5",
+        textColor: "White",
+        actions: [{ icon: "close", color: "white" }],
+        message: `ERROR, la venta no pudo ejecutarse...`,
       });
-  } catch (error) {
-    console.log(error, "error venta no realizada");
-    $q.notify({
-      position: "bottom",
-      timeout: 3500,
-      color: "red-5",
-      textColor: "White",
-      actions: [{ icon: "close", color: "white" }],
-      message: `ERROR, la venta no pudo ejecutarse...`,
-    });
+    }
+  } else {
+    try {
+      $q.dialog({
+        title: "VENTA SIN NIT:",
+        message:
+          "¿Esta seguro que desea realizar la venta sin un NIT para la factura?",
+        cancel: true,
+        persistent: true,
+      })
+        .onOk(async () => {
+          const usuario = usuarios.value.find(
+            (u) => u.numeroDocumento === "0" || u.numeroDocumento === "00"
+          );
+          usu.value = usuario.id;
+          const venta = {
+            idCliente: usu.value,
+            total: total.value,
+            productos: rows2.value.map((row) => {
+              return {
+                idProducto: row.id,
+                cantidad: row.cantidad,
+                total: row.precioVenta,
+              };
+            }),
+          };
+          await api.post("/farmacia/ventas", venta);
+          console.log("Venta realizada sin NIT...");
+          $q.notify({
+            position: "bottom",
+            timeout: 3500,
+            color: "green-5",
+            textColor: "White",
+            actions: [{ icon: "close", color: "white" }],
+            message: `Venta realizada...`,
+          });
+          resetForm();
+          traerDatos();
+        })
+        .onCancel(() => {
+          // console.log('>>>> Cancel')
+        })
+        .onDismiss(() => {
+          // console.log('I am triggered on both OK and Cancel')
+        });
+    } catch (error) {
+      console.log("ERROR", error);
+    }
   }
 }
 function agregar(id) {
@@ -297,8 +351,10 @@ function agregar(id) {
       cancel: true,
       persistent: true,
       prompt: {
+        model: 1,
         type: "number",
         min: 1,
+        step: 1,
       },
     })
       .onOk((data) => {
@@ -311,12 +367,12 @@ function agregar(id) {
           rows2.value.push({
             nombreComercial: controlProd.nombreProducto.nombre,
             precioUnitario: controlProd.precioUnitario,
-            precioVenta: controlProd.precioVenta * controlProd.cantidad,
+            precioVenta: controlProd.precioUnitario * controlProd.cantidad,
             cantidad: controlProd.cantidad,
             id: controlProd.id,
           });
           total.value =
-            total.value + controlProd.precioVenta * controlProd.cantidad;
+            total.value + controlProd.precioUnitario * controlProd.cantidad;
         } else {
           console.log(
             "La cantidad tiene que ser mayor a cero o la cantidad es menor al stock del medicamento"
@@ -329,6 +385,16 @@ function agregar(id) {
       });
   } catch (error) {
     console.log("Erro", error);
+  }
+}
+function eliminarItem(row) {
+  console.log("INDEX", row);
+  total.value = total.value - row.precioVenta;
+  const index = this.rows2.indexOf(row);
+
+  if (index > -1) {
+    // Elimina la fila del array de datos
+    this.rows2.splice(index, 1);
   }
 }
 

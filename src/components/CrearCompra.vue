@@ -65,11 +65,13 @@
               <q-input v-model="compra.lote" label="Lote" />
             </div>
             <div class="col-12" style="width: 105px">
-              <q-input v-model="compra.precioCompra" label="Precio de Compra" />
+              <q-input
+                :readonly="editarCompra"
+                v-model="compra.precioCompra"
+                label="Precio de Compra"
+              />
             </div>
-            <div class="col-12" style="width: 105px">
-              <q-input v-model="compra.cantidadMinima" label="Stock Minimo" />
-            </div>
+
             <div class="q-pa-md">
               <q-input
                 filled
@@ -120,12 +122,21 @@
                 input-debounce="0"
                 label="Proveedor"
                 v-model="compra.idProveedor"
+                @filter="filterFn2"
                 :options="option2"
                 emit-value
                 map-options
                 option-value="id"
                 option-label="nombre"
-              />
+              >
+                <template v-slot:no-option>
+                  <q-item>
+                    <q-item-section class="text-grey">
+                      Proveedor inexistente
+                    </q-item-section>
+                  </q-item>
+                </template>
+              </q-select>
             </div>
 
             <div class="col-12">
@@ -234,14 +245,6 @@ watch(
       };
     }
   }
-
-  /*() => {
-    if (option2.value.id) {
-      const provee = proveedores.value.find((u) => u.id === option2.value.id);
-      option2.value = provee.value;
-      console.log("IDE PROV", option2.value);
-    }
-  }*/
 );
 function filterFn(val, update, abort) {
   update(() => {
@@ -249,14 +252,16 @@ function filterFn(val, update, abort) {
     option.value = nombres.value.filter(
       (v) => v.nombre.toLowerCase().indexOf(needle) > -1
     );
-    /*provId.value = String(compra.value.idNombre);
-    const encontrarProv = compras.value.find(
-      (id) => id.idNombre === provId.value
-    );
-    console.log("BUSCANDO PROV", compras.value);*/
   });
 }
-
+function filterFn2(val, update, abort) {
+  update(() => {
+    const needle = val.toLowerCase();
+    option2.value = proveedores.value.filter(
+      (v) => v.nombre.toLowerCase().indexOf(needle) > -1
+    );
+  });
+}
 const enviarForm = async () => {
   try {
     await api.post("/farmacia/compras", compra.value);

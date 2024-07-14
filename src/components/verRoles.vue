@@ -61,7 +61,7 @@
       <q-card>
         <q-card-section class="q-pt-none">
           <h4>DESIGNACION DE ROLES</h4>
-          {{ menusSeleccionados }}
+
           <form action="">
             <q-select
               filled
@@ -121,7 +121,7 @@ const $q = useQuasar();
 const props = defineProps(["refrescarTabla"]);
 const emit = defineEmits(["capturarDatos"]);
 const dialogMenu = ref(false);
-//const editarRol = ref(false);
+const editarRol = ref(false);
 const roles = ref({});
 const designMenu = ref(false);
 const menusSeleccionados = ref([]);
@@ -173,23 +173,74 @@ async function traerDatos() {
   console.log("MENUSROLES", menusRoles.value);
 }
 async function guardarMenuModif() {
-  console.log("MODIF", menusSeleccionados.value);
+  try {
+    $q.dialog({
+      title: "AÑADIR o QUITAR Menú(s) a un Rol",
+      message: "¿Esta seguro de asignar o quitar menú(s) a este Rol?",
+      cancel: true,
+      persistent: true,
+    })
+      .onOk(async () => {
+        const asignacion = await api.post(
+          `/system/roles/${ide.value}/agregar-menu`,
+          menusSeleccionados.value
+        );
+        $q.notify({
+          position: "bottom",
+          timeout: 4500,
+          color: "purple",
+          textColor: "white",
+          actions: [{ icon: "close", color: "red" }],
+          message: `Menú(s) asignado(s) y/o quitado(s)...`,
+        });
+        await traerDatos();
+      })
+      .onCancel(() => {
+        // console.log('>>>> Cancel')
+      })
+      .onDismiss(() => {
+        // console.log('I am triggered on both OK and Cancel')
+      });
 
-  const asignacion = await api.post(
-    `/system/roles/${ide.value}/agregar-menu`,
-    menusSeleccionados.value
-  );
-
-  cerrarModal();
+    cerrarModal();
+  } catch (error) {
+    console.log("ERROR", error);
+  }
 }
 async function guardarMenu() {
-  const asignacion = await api.post(
-    `/system/roles/${ide.value}/agregar-menu`,
-    menusSeleccionados.value
-  );
-  console.log("ASIGNACION", asignacion);
-  alert.value = false;
-  cerrarModal();
+  try {
+    $q.dialog({
+      title: "ASIGNAR Menú(s) a un Rol",
+      message: "¿Esta seguro de asignar menú(s) a este Rol?",
+      cancel: true,
+      persistent: true,
+    })
+      .onOk(async () => {
+        const asignacion = await api.post(
+          `/system/roles/${ide.value}/agregar-menu`,
+          menusSeleccionados.value
+        );
+        $q.notify({
+          position: "bottom",
+          timeout: 4500,
+          color: "primary",
+          textColor: "white",
+          actions: [{ icon: "close", color: "white" }],
+          message: `Menú asignado y/o quitado...`,
+        });
+        await traerDatos();
+      })
+      .onCancel(() => {
+        // console.log('>>>> Cancel')
+      })
+      .onDismiss(() => {
+        // console.log('I am triggered on both OK and Cancel')
+      });
+
+    //console.log("ASIGNACION", asignacion);
+    alert.value = false;
+    cerrarModal();
+  } catch (error) {}
 }
 
 function modificarDatos(datos) {
