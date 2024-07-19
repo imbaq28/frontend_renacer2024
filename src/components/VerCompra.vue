@@ -73,48 +73,6 @@ const emit = defineEmits(["capturarDatos"]);
 const editarCompra = ref(false);
 const compra = ref({});
 
-const columns = [
-  {
-    name: "acciones",
-    label: "Edit/Eli",
-    align: "left",
-    field: "acciones",
-  },
-  {
-    name: "id_nombre",
-    label: "Nombre Comercial",
-    align: "left",
-    field: (row) => row.nombreProducto.nombre,
-  },
-
-  { name: "cantidad", label: "Cantidad", field: "cantidad" },
-  { name: "cantidad_minima", label: "Stock Minimo", field: "cantidadMinima" },
-
-  { name: "observaciones", label: "Observaciones", field: "observaciones" },
-
-  {
-    name: "fecha_vencimiento",
-    label: "Fecha de vencimiento",
-    field: "fechaVencimiento",
-  },
-
-  { name: "lote", label: "Numero de lote", field: "lote" },
-
-  {
-    name: "precioCompra",
-    label: "Precio de Compra",
-    field: "precioCompra",
-  },
-
-  {
-    name: "idProveedor",
-    label: "Proveedor",
-    field: (row) => row.proveedor.nombre,
-  },
-
-  { name: "estado", label: "Estado", field: "estado" },
-];
-
 onMounted(async () => {
   const nom = await api.get("/farmacia/nombre");
   nombres.value = nom.data.datos;
@@ -186,6 +144,48 @@ async function borrarDatos(id) {
     console.log(error);
   }
 }
+
+const columns = [
+  {
+    name: "acciones",
+    label: "Edit/Eli",
+    align: "left",
+    field: "acciones",
+  },
+  {
+    name: "id_nombre",
+    label: "Nombre Comercial",
+    align: "left",
+    field: (row) => row.nombreProducto.nombre,
+  },
+
+  { name: "cantidad", label: "Cantidad", field: "cantidad" },
+  { name: "cantidad_minima", label: "Stock Minimo", field: "cantidadMinima" },
+
+  { name: "observaciones", label: "Observaciones", field: "observaciones" },
+
+  {
+    name: "fecha_vencimiento",
+    label: "Fecha de vencimiento",
+    field: "fechaVencimiento",
+  },
+
+  { name: "lote", label: "Numero de lote", field: "lote" },
+
+  {
+    name: "precioCompra",
+    label: "Precio de Compra",
+    field: "precioCompra",
+  },
+
+  {
+    name: "idProveedor",
+    label: "Proveedor",
+    field: (row) => row.proveedor.nombre,
+  },
+
+  { name: "estado", label: "Estado", field: "estado" },
+];
 </script>
 <style scoped>
 * {

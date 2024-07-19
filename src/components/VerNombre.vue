@@ -128,9 +128,11 @@ const loading = ref(false);
 const filter = ref("");
 const rows = ref([]);
 const nombre = ref([]);
+
 async function traerDatos() {
   const nombre = await api.get("/farmacia/nombre");
   rows.value = nombre.data.datos;
+  console.log("MEDICAMENTOS> ", rows.value);
 }
 
 function modificarDatos(datos) {

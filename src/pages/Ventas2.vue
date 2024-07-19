@@ -165,6 +165,8 @@ const rows = ref([]);
 const rows2 = ref([]);
 const cliente = ref("S/N");
 const $q = useQuasar();
+let timer;
+
 const option = ref([]);
 const proveedores = ref([]);
 const nombres = ref([]);
@@ -196,23 +198,17 @@ const resetForm = () => {
 
 async function traerDatos() {
   const med = await api.get("/farmacia/medicamento");
-  //console.log("MEDICAMENTO DATOS", med.data.datos);
   medicamento.value = med.data.datos;
   rows.value = med.data.datos;
 
   const prov = await api.get("/farmacia/proveedores");
-  // console.log("se obtubo datos del proveedor", prov.data.datos);
   proveedores.value = prov.data.datos;
 
-  //const usu = await api.get("/system/usuario");
-  // console.log("se obtubo datos del usuario", usu.data.datos);
-  //usuarios.value = usu.data.datos;
-  //option.value = usu.data.datos;
-  //console.log("se obtubo datos del usuario", option.value);
   await traerDatosCliente();
   const noms = await api.get("/farmacia/nombre");
   // console.log("se obtubo datos del medicamento nombre", noms.data.datos);
   nombres.value = noms.data.datos;
+  //console.log("prueba", rows2.value);
 }
 
 onMounted(async () => {
@@ -263,8 +259,14 @@ async function venta() {
               };
             }),
           };
-          await api.post("/farmacia/ventas", venta);
-          console.log("Venta realizada...");
+          $q.loading.show();
+          const ventas = await api.post("/farmacia/ventas", venta);
+          console.log("Venta realizada...", ventas);
+          const factura = await api.get(
+            `system/reportes/${ventas.data.datos.id}/generar-factura`
+          );
+          generarPDF(factura.data.datos);
+          $q.loading.hide();
           $q.notify({
             position: "bottom",
             timeout: 3500,
@@ -318,7 +320,13 @@ async function venta() {
               };
             }),
           };
-          await api.post("/farmacia/ventas", venta);
+          $q.loading.show();
+          const ventas = await api.post("/farmacia/ventas", venta);
+          const factura = await api.get(
+            `system/reportes/${ventas.data.datos.id}/generar-factura`
+          );
+          generarPDF(factura.data.datos);
+          $q.loading.hide();
           console.log("Venta realizada sin NIT...");
           $q.notify({
             position: "bottom",
@@ -342,8 +350,34 @@ async function venta() {
     }
   }
 }
+
+function generarPDF(datosPDF) {
+  const base64String = datosPDF;
+  const byteCharacters = atob(base64String);
+  const byteNumbers = new Array(byteCharacters.length);
+
+  for (let i = 0; i < byteCharacters.length; i++) {
+    byteNumbers[i] = byteCharacters.charCodeAt(i);
+  }
+
+  const byteArray = new Uint8Array(byteNumbers);
+  const blob = new Blob([byteArray], { type: "application/pdf" });
+  const blobUrl = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = blobUrl;
+  //const numero = rows.filter()
+  link.download = `archivo.pdf`; // El nombre con el que se descargará el archivo
+  document.body.appendChild(link);
+  link.click();
+
+  // Limpiar
+  document.body.removeChild(link);
+  URL.revokeObjectURL(blobUrl);
+}
+
 function agregar(id) {
   const controlProd = rows.value.find((row) => row.id === id);
+  //console.log(rows2.value, "DATAAAAAAAAA");
   try {
     $q.dialog({
       title: "Cantidad para Agregar",
@@ -359,10 +393,14 @@ function agregar(id) {
     })
       .onOk((data) => {
         controlProd.cantidad = parseInt(data);
-        //console.log("PRODUCTO", controlProd, rows2.value);
+        const algo = rows2.value.find((p) => p.id === id);
+        //console.log(data, "ALGO");
+        //const repetido = rows2.value.map(algo.value.id);
+        //console.log("REPETIDO", repetido);
         if (
           controlProd.cantidad <= controlProd.stock &&
-          controlProd.cantidad > 0
+          controlProd.cantidad > 0 &&
+          !algo
         ) {
           rows2.value.push({
             nombreComercial: controlProd.nombreProducto.nombre,
@@ -371,12 +409,20 @@ function agregar(id) {
             cantidad: controlProd.cantidad,
             id: controlProd.id,
           });
+
           total.value =
             total.value + controlProd.precioUnitario * controlProd.cantidad;
+          console.log("VERIFICANDO", total.value);
         } else {
-          console.log(
-            "La cantidad tiene que ser mayor a cero o la cantidad es menor al stock del medicamento"
-          );
+          if (algo) {
+            algo.cantidad = algo.cantidad + parseInt(data);
+            algo.precioVenta = algo.precioUnitario * algo.cantidad;
+            total.value = total.value + algo.precioUnitario * data;
+          } else {
+            console.log(
+              "La cantidad tiene que ser mayor a cero o la cantidad es menor al stock del medicamento"
+            );
+          }
         }
       })
       .onCancel(() => {})
@@ -438,6 +484,7 @@ const columns = [
     label: "Precio de venta",
     field: "precioVenta",
   },
+
   //{ name: "estado", label: "Estado", field: "estado" },
 ];
 

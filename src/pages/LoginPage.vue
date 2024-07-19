@@ -36,7 +36,7 @@
                 :loading="loading[3]"
                 color="primary"
                 @click="ingresarSistema"
-                style="width: 150px"
+                style="width: 200px"
               >
                 Ingresar
                 <template v-slot:loading>
@@ -69,7 +69,13 @@
           </div>
           <div class="col">
             <div>
-              <CrearCliente />
+              <q-btn
+                label="Ingresar como invitado"
+                color="primary"
+                style="width: 200px"
+                @click="ingresarSistemaInvitado"
+              >
+              </q-btn>
             </div>
           </div>
         </div>
@@ -81,7 +87,7 @@
 
 <script setup>
 import { ref } from "vue";
-import CrearCliente from "src/components/CrearCliente.vue";
+//import CrearCliente from "src/components/CrearCliente.vue";
 import { api } from "src/boot/axios";
 import { useRouter } from "vue-router";
 import { useQuasar } from "quasar";
@@ -105,14 +111,30 @@ function simulateProgress(number) {
     loading.value[number] = false;
   }, 3000);
 }
-
+async function ingresarSistemaInvitado() {
+  try {
+    const usu = await api.post(`/system/usuario/login`, {
+      usuario: "invitado",
+      contrasena: "invitado",
+    });
+    //console.log(usu, "USS PASS");
+    $q.localStorage.set("user", usu.data.datos);
+    router.push("/farmacia/bienvenidos");
+  } catch (error) {
+    $q.dialog({
+      title: "Error de ingreso...",
+      message: "No pudo ingresar como invitado, intente nuevamente... ",
+    });
+    console.log("error", error);
+  }
+}
 async function ingresarSistema() {
   try {
     const usu = await api.post(`/system/usuario/login`, {
       usuario: usuario.value,
       contrasena: password.value,
     });
-    console.log(usu, "USS PASS");
+    //console.log(usu, "USS PASS");
     $q.localStorage.set("user", usu.data.datos);
     router.push("/farmacia/bienvenidos");
   } catch (error) {

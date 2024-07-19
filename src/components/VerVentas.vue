@@ -7,7 +7,24 @@
       :rows="rows"
       :columns="columns"
       row-key="id"
+      :filter="filter"
+      :loading="loading"
+      :rows-per-page-options="[10, 15, 20, 25]"
     >
+      <template v-slot:top>
+        <q-input
+          borderless
+          dense
+          debounce="300"
+          color="primary"
+          v-model="filter"
+          label="DATOS A BUSCAR..."
+        >
+          <template v-slot:append>
+            <q-icon name="search" />
+          </template>
+        </q-input>
+      </template>
       <template v-slot:header="props">
         <q-tr :props="props">
           <q-th auto-width />
@@ -31,6 +48,15 @@
           </q-td>
           <q-td v-for="col in props.cols" :key="col.name" :props="props">
             {{ col.value }}
+
+            <q-btn
+              v-if="col.field === 'factura'"
+              @click="verFactura(props.row)"
+              color="red"
+              icon="picture_as_pdf"
+              style="width: 50px"
+            >
+            </q-btn>
           </q-td>
         </q-tr>
         <q-tr v-show="props.expand" :props="props">
@@ -55,7 +81,6 @@
         </q-tr>
       </template>
     </q-table>
-    <q-btn color="primary" label="DOWNLOAD PDF" @click="donwloadPDF()" />
   </div>
 </template>
 
@@ -64,7 +89,7 @@ import { ref, onMounted } from "vue";
 import { api } from "boot/axios";
 import { useQuasar } from "quasar";
 
-import jsPDF from "jspdf";
+//import jsPDF from "jspdf";
 
 const $q = useQuasar();
 const props = defineProps(["refrescarTabla"]);
@@ -75,55 +100,53 @@ const editarVentas = ref(false);
 const clientes = ref({});
 const clie = ref({});
 
-function createHeaders(keys) {
-  var result = [];
-  for (var i = 0; i < keys.length; i += 1) {
-    result.push({
-      id: keys[i],
-      name: keys[i],
-      prompt: keys[i],
-      width: 65,
-      align: "center",
-      padding: 0,
-    });
-  }
-  return result;
+async function verFactura(datos) {
+  const factura = await api.get(`system/reportes/${datos.id}/generar-factura`);
+  generarPDF(factura.data.datos);
+  console.log("prueba", factura);
 }
+function generarPDF(datosPDF) {
+  const base64String = datosPDF;
+  const byteCharacters = atob(base64String);
+  const byteNumbers = new Array(byteCharacters.length);
 
-function donwloadPDF() {
-  var headers = createHeaders(["id", "nombre", "nit", "direccion", "estado"]);
-  console.log(rows.value, "TEST");
-  const body = rows.value.map((row) => {
-    return {
-      id: row.id,
-      nombre: row.nombre,
-      nit: row.nit,
-      direccion: row.direccion,
-      estado: row.estado,
-    };
-  });
-  const pdf = new jsPDF({ putOnlyUsedFonts: true, orientation: "landscape" });
-  console.log("DATOS", body);
-  pdf.table(10, 10, body, headers, { autoSize: true });
-  pdf.save("asd.pdf");
+  for (let i = 0; i < byteCharacters.length; i++) {
+    byteNumbers[i] = byteCharacters.charCodeAt(i);
+  }
+
+  const byteArray = new Uint8Array(byteNumbers);
+  const blob = new Blob([byteArray], { type: "application/pdf" });
+  const blobUrl = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = blobUrl;
+  //const numero = rows.filter()
+  link.download = `archivo.pdf`; // El nombre con el que se descargará el archivo
+  document.body.appendChild(link);
+  link.click();
+
+  // Limpiar
+  document.body.removeChild(link);
+  URL.revokeObjectURL(blobUrl);
 }
 
 const columns = [
   {
-    name: "name",
+    name: "nombres",
     required: true,
-    label: "Productos",
+    label: "Vendedor",
     align: "left",
-    field: (row) => row.id,
-    format: (val) => `${val}`,
+    field: (row) =>
+      `${row.vendedor?.primerApellido ? row.vendedor?.primerApellido : ""} ${
+        row.vendedor?.nombres ? row.vendedor?.nombres : ""
+      }`,
     sortable: true,
   },
 
   {
-    name: "idCliente",
+    name: "primerApellido",
     align: "left",
     label: "Nombre del Cliente",
-    field: (row) => row.idCliente,
+    field: (row) => row.cliente.primerApellido,
     sortable: true,
   },
   {
@@ -131,6 +154,7 @@ const columns = [
     label: "Fecha del pedido",
     field: "fechaPedido",
     align: "left",
+    sortable: true,
   },
   {
     name: "numeroFactura",
@@ -138,8 +162,21 @@ const columns = [
     field: "numeroFactura",
     align: "left",
   },
-  { name: "total", label: "Total", field: "total", align: "left" },
+  {
+    name: "total",
+    label: "Total",
+    field: "total",
+    align: "left",
+    sortable: true,
+  },
   { name: "estado", label: "Estado", field: "estado", align: "left" },
+  {
+    name: "factura",
+    label: "Ver Factura",
+    field: "factura",
+    align: "left",
+    sortable: true,
+  },
 ];
 
 onMounted(async () => {

@@ -52,8 +52,11 @@
           <q-avatar size="56px" class="q-mb-sm">
             <img src="https://cdn.quasar.dev/img/boy-avatar.png" />
           </q-avatar>
-          <div class="text-weight-bold">Farmacia RENACER</div>
-          <div>@rstoenescu</div>
+          <div class="text-weight-bold" style="color: red">
+            Bienvenido {{ usuario.nombres }}
+          </div>
+
+          <verPerfil />
         </div>
       </q-img>
     </q-drawer>
@@ -68,17 +71,31 @@
 import { ref } from "vue";
 import { useQuasar } from "quasar";
 import { useRouter } from "vue-router";
-
+import verPerfil from "src/components/verPerfil.vue";
+//import VerPerfil from "src/components/verPerfil.vue";
 const $q = useQuasar();
 const drawer = ref(false);
 const usuario = $q.localStorage.getItem("user");
 const router = useRouter();
-console.log("usuario LOG", usuario);
+//const usuario = ref({});
+//const editarUsuario = ref(false);
+
+//const rows = ref([]);
+//console.log("usuario LOG", user);
 
 function cerrarSesion() {
   console.log("Cerrando sesion...");
   $q.localStorage.clear();
   router.push("/log/login");
+}
+/*
+async function traerDatos() {
+  const usuario = await api.get("/system/usuario");
+  rows.value = usuario.data.datos;
+}*/
+
+function redirectToLink() {
+  verPerfil;
 }
 </script>
 

@@ -13,27 +13,14 @@
       :loading="loading"
     >
       <template v-slot:top>
-        <q-btn
-          color="primary"
-          :disable="loading"
-          label="Traer Datos"
-          @click="traerDatos"
-        />
-
-        <CrearMedicamento
-          @traerDatos="traerDatos"
-          @cerrar="cerrar"
-          :editarMedicamento="editarMedicamento"
-          :med="medicamento"
-        />
-
-        <q-space />
         <q-input
           borderless
           dense
           debounce="300"
+          style="width: 300px"
           color="primary"
           v-model="filter"
+          label="Buscador de Medicamentos"
         >
           <template v-slot:append>
             <q-icon name="search" />
@@ -43,12 +30,14 @@
       <template #body-cell-acciones="props">
         <q-td :props="props" style="width: 50px">
           <q-btn
+            v-if="permiso"
             icon="edit"
             color="primary"
             @click="modificarDatos(props.row)"
             padding="4px"
           />
           <q-btn
+            v-if="permiso"
             icon="delete"
             color="red"
             @click="borrarDatos(props.row.id)"
@@ -56,8 +45,41 @@
           />
         </q-td>
       </template>
+      <template #body-cell-imagen="props">
+        <q-td :props="props">
+          <img :src="props.row.nombreProducto.imagen" style="width: 50px" />
+        </q-td>
+      </template>
+      <template #body-cell-proveedor="props">
+        <q-td auto-width>
+          <q-btn
+            size="sm"
+            color="accent"
+            round
+            dense
+            @click="props.expand = !props.expand"
+            :icon="props.expand ? 'remove' : 'add'"
+          />
+        </q-td>
+        <q-tr v-show="props.expand" :props="props">
+          <q-td colspan="100%">
+            <br />
+            <div class="text-left">
+              <table>
+                <tr>
+                  <td>Proveedor:</td>
+                  <td>Cantidad:</td>
+                </tr>
+                <tr v-for="producto in props.row.detalles" :key="producto.id">
+                  <td>{{ producto.proveedor.nombre }}</td>
+                  <td>{{ producto.cantidad }}</td>
+                </tr>
+              </table>
+            </div>
+          </q-td>
+        </q-tr>
+      </template>
     </q-table>
-    <q-btn color="primary" label="DOWNLOAD PDF" @click="donwloadPDF()" />
   </div>
 </template>
 
@@ -65,9 +87,9 @@
 import { ref, onMounted, watch } from "vue";
 import { api } from "boot/axios";
 import { useQuasar } from "quasar";
-import CrearMedicamento from "src/components/CrearMedicamento.vue";
+//import CrearMedicamento from "src/components/CrearMedicamento.vue";
 //import CrearCompra from "./CrearCompra.vue";
-import jsPDF from "jspdf";
+//import jsPDF from "jspdf";
 
 const $q = useQuasar();
 const props = defineProps(["refrescarTabla"]);
@@ -77,75 +99,8 @@ const medicamento = ref({});
 const loading = ref(false);
 const filter = ref("");
 const rows = ref([]);
-
-const columns = [
-  {
-    name: "acciones",
-    label: "Edit/Eli",
-    align: "left",
-    field: "acciones",
-  },
-  {
-    name: "id_nombre",
-    label: "Nombre Comercial",
-    align: "left",
-    field: (row) => row.nombreProducto.nombre,
-  },
-  {
-    name: "precio_venta",
-    label: "Precio de venta",
-    field: "precioVenta",
-  },
-
-  {
-    name: "precio_unitario",
-    label: "Precio Unitario",
-    field: "precioUnitario",
-  },
-
-  { name: "stock", label: "Stock", field: "stock", sortable: true },
-  { name: "cantidad_minima", label: "Stock Minimo", field: "cantidadMinima" },
-  { name: "estado", label: "Estado", field: "estado" },
-];
-
-function createHeaders(keys) {
-  var result = [];
-  for (var i = 0; i < keys.length; i += 1) {
-    result.push({
-      id: keys[i],
-      name: keys[i],
-      prompt: keys[i],
-      width: 65,
-      align: "center",
-      padding: 0,
-    });
-  }
-  return result;
-}
-
-function donwloadPDF() {
-  var headers = createHeaders([
-    "nombreComercial",
-    "precioVenta",
-    "precioUnitario",
-    "stock",
-    "estado",
-  ]);
-  console.log(rows.value, "TEST");
-  const body = rows.value.map((row) => {
-    return {
-      nombreComercial: row.nombreProducto.nombre,
-      precioVenta: String(row.precioVenta),
-      precioUnitario: String(row.precioUnitario),
-      stock: String(row.stock),
-      estado: row.estado,
-    };
-  });
-  console.log("BODY", body);
-  const pdf = new jsPDF({ putOnlyUsedFonts: true, orientation: "landscape" });
-  pdf.table(10, 10, body, headers, { autoSize: true });
-  pdf.save("asd.pdf");
-}
+const userRoles = ref("");
+const permiso = ref(true);
 
 onMounted(async () => {
   await traerDatos();
@@ -165,13 +120,19 @@ async function traerDatos() {
   try {
     const medicamento = await api.get("/farmacia/medicamento");
     rows.value = medicamento.data.datos;
-    console.log(medicamento);
+    userRoles.value = $q.localStorage.getItem("user").roles.nombre;
+    console.log("LISTA DE MEDICAMENTOS", rows.value);
+    if (userRoles.value === "INVITADO") {
+      permiso.value = false;
+    } else {
+      permiso.value = true;
+    }
   } catch (error) {
-    console.log(error, "ERROR TRAER DATOS");
+    console.log(error, "ERROR AL TRAER DATOS");
   }
 }
 
-function modificarDatos(datos) {
+function modificarDatos(datos, rol) {
   try {
     console.log("MODIFICANDO MEDICAMENTO", medicamento.value);
     editarMedicamento.value = true;
@@ -186,7 +147,7 @@ function cerrar() {
   medicamento.value = {};
 }
 
-async function borrarDatos(id) {
+async function borrarDatos(id, rol) {
   try {
     $q.dialog({
       title: "Eliminar Medicamento",
@@ -212,4 +173,56 @@ async function borrarDatos(id) {
     console.log(error);
   }
 }
+
+const columns = [
+  {
+    name: "acciones",
+    label: "Edit/Eli",
+    align: "left",
+    field: "acciones",
+  },
+
+  {
+    name: "id_nombre",
+    label: "Nombre Comercial",
+    align: "left",
+    field: (row) => row.nombreProducto.nombre,
+  },
+
+  {
+    name: "proveedor",
+    label: "Proveedor(es)",
+    field: (row) => row.detalles?.idProveedor,
+  },
+
+  {
+    name: "idPresentacion",
+    label: "PRESENTACIÓN",
+    field: (row) => row.nombreProducto.presentacion.nombre,
+  },
+
+  {
+    name: "precio_venta",
+    label: "Precio de venta",
+    field: "precioVenta",
+  },
+
+  {
+    name: "precio_unitario",
+    label: "Precio Unitario",
+    field: "precioUnitario",
+  },
+
+  { name: "stock", label: "Stock", field: "stock", sortable: true },
+  //{ name: "cantidad_minima", label: "Stock Minimo", field: "cantidadMinima" },
+  {
+    name: "imagen",
+    label: "Imagen",
+    field: (row) =>
+      `${row.nombreProducto?.imagen ? row.nombreProducto?.imagen : ""}`,
+    align: "left",
+    sortable: true,
+  },
+  { name: "estado", label: "Estado", field: "estado" },
+];
 </script>

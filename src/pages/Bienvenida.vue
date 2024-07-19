@@ -1,6 +1,8 @@
 <template>
+  <div class="text-h2">BIENVENIDOS</div>
   <div>
-    <h5>bienvenidos</h5>
+    <img src="/public/images/renacerIA.jfif" alt="" />
   </div>
+
   <template />
 </template>
